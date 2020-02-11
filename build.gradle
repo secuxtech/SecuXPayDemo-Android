@@ -4,7 +4,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -19,7 +19,7 @@ allprojects {
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven { url "https://maochuns.github.io/maven" }
+        maven { url "https://raw.githubusercontent.com/secuxtech/secux-peripheralkit-android/master/repository" }
     }
 }
 
