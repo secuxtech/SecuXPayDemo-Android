@@ -4,13 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.PaymentDetailsActivity">
+    tools:context=".Activity.PaymentDetailsActivity"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/colorPageBkg">
 
     <TextView
         android:id="@+id/textView_storename"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="N/A"
+        android:textSize="24dp"
+        android:textColor="#757575"
+        android:textStyle="bold"
 
         android:layout_marginTop="25dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -27,6 +33,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+
     <ImageView
         android:id="@+id/imageView_storelogo"
         android:layout_width="wrap_content"
@@ -38,15 +46,68 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <TextView
+        android:id="@+id/textView_payment_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Account"
+        android:textSize="19dp"
+        android:textStyle="bold"
+        android:textColor="#1F2020"
+
+        android:layout_marginLeft="44dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView_storelogo"/>
+
+    <include android:id="@+id/layout_account_info"
+        android:layout_width="349dp"
+        android:layout_height="78dp"
+        layout="@layout/cardview_accountinfo_layout"
+        android:layout_marginTop="9dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_payment_account"/>
+
+
+
+    <TextView
+        android:id="@+id/textView_payment_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount"
+        android:textSize="19dp"
+        android:textStyle="bold"
+        android:textColor="#1F2020"
+
+        android:layout_marginLeft="44dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_account_info"/>
+
+    <include android:id="@+id/layout_input_payment_amount"
+        android:layout_width="320dp"
+        android:layout_height="58dp"
+        layout="@layout/input_payment_amount_layout"
+        android:layout_marginTop="6dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_payment_amount"/>
+
     <Button
         android:id="@+id/button_pay"
         android:layout_width="300dp"
-        android:layout_height="60dp"
+        android:layout_height="46dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/ripple_effect"
 
         android:onClick="onPayButtonClick"
         android:text="Pay"
+        android:textSize="19dp"
+        android:textStyle="bold"
+        android:textColor="@color/colorLabel"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
