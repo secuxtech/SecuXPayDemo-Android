@@ -61,7 +61,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
             textviewAccount = itemView.findViewById(R.id.textView_history_account);
             textviewDate = itemView.findViewById(R.id.textView_history_date);
             textviewUsdbalance = itemView.findViewById(R.id.textView_history_usdbalance);
-            textviewBalance = itemView.findViewById(R.id.textView_account_balance);
+            textviewBalance = itemView.findViewById(R.id.textView_history_balance);
             imageviewCoinLogo = itemView.findViewById(R.id.imageView_history_coinlogo);
 
         }

@@ -95,8 +95,11 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
-                PaymentHistoryModel payment = new PaymentHistoryModel(Wallet.getInstance().getAccount(SecuXCoinType.IFC), "Store ttt", "2020-12-12 11:12:11", String.format("%.2f", 5.68), "234");
-                Wallet.getInstance().addPaymentHistoryItem(payment);
+                for (int i=0; i<20; i++){
+                    PaymentHistoryModel payment = new PaymentHistoryModel(Wallet.getInstance().getAccount(SecuXCoinType.IFC), "Store ttt", "2020-12-12 11:12:11", String.format("%.2f", 5.68), "234");
+                    Wallet.getInstance().addPaymentHistoryItem(payment);
+                }
+
 
                 Intent ttIntent = new Intent(mContext, PaymentHistoryActivity.class);
                 startActivity(ttIntent);
