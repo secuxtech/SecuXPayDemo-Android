@@ -18,6 +18,7 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
 import com.secuxtech.mysecuxpay.Model.Wallet;
 import com.secuxtech.mysecuxpay.R;
 
@@ -94,7 +95,14 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
+                PaymentHistoryModel payment = new PaymentHistoryModel(Wallet.getInstance().getAccount(SecuXCoinType.IFC), "Store ttt", "2020-12-12 11:12:11", String.format("%.2f", 5.68), "234");
+                Wallet.getInstance().addPaymentHistoryItem(payment);
 
+                Intent ttIntent = new Intent(mContext, PaymentHistoryActivity.class);
+                startActivity(ttIntent);
+                return;
+
+/*
                 //Toast.makeText(getApplicationContext(),"Scan result: "+scanContent, Toast.LENGTH_LONG).show();
                 Intent newIntent = new Intent(this, PaymentDetailsActivity.class);
                 newIntent.putExtra(PAYMENT_INFO, scanContent);
@@ -102,7 +110,7 @@ public class MainActivity extends BaseActivity {
                 newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, coinType);
                 startActivity(newIntent);
                 return;
-
+*/
                 /*
                 String amountStr = "10 IFC";
 

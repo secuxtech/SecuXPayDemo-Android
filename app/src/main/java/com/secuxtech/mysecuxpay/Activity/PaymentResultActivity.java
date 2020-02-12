@@ -2,10 +2,16 @@ package com.secuxtech.mysecuxpay.Activity;
 
 import androidx.core.content.ContextCompat;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
+import com.secuxtech.mysecuxpay.Model.Wallet;
 import com.secuxtech.mysecuxpay.R;
 
 import java.text.SimpleDateFormat;
@@ -15,6 +21,7 @@ import java.util.Date;
 
 public class PaymentResultActivity extends BaseActivity {
 
+    private Context mContext = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,15 +49,22 @@ public class PaymentResultActivity extends BaseActivity {
         textviewAmt.setTextColor(color);
         textviewAmt.setText(amountStr);
 
-        SimpleDateFormat simpleDateFormat =
-                new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
-        Date date = Calendar.getInstance().getTime();
+        String date = getIntent().getStringExtra(PaymentDetailsActivity.PAYMENT_DATE);
         TextView textviewDate = findViewById(R.id.textView_payment_date);
-        textviewDate.setText(simpleDateFormat.format(date));
+        textviewDate.setText(date);
 
         String storename = getIntent().getStringExtra(PaymentDetailsActivity.PAYMENT_STORENAME);
         TextView textviewStoreName = findViewById(R.id.textView_storename_value);
         textviewStoreName.setText(storename);
+
+        LinearLayout payRetInfoLayout = findViewById(R.id.linearLayout_payment_result_history);
+        payRetInfoLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent newIntent = new Intent(mContext, PaymentHistoryActivity.class);
+                startActivity(newIntent);
+            }
+        });
 
     }
 }

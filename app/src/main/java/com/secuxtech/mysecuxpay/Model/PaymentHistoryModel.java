@@ -8,4 +8,12 @@ public class PaymentHistoryModel {
     public String   mDate = "";
     public String   mUsbBalance = "";
     public String   mBalance = "";
+
+    public PaymentHistoryModel(Account account, String storename, String date, String usdBalance, String balance){
+        mAccount = account;
+        mStoreName = storename;
+        mDate = date;
+        mUsbBalance = usdBalance;
+        mBalance = balance;
+    }
 }

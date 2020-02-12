@@ -26,15 +26,19 @@ public class Wallet {
         loadAccounts();
     }
 
-    private ArrayList<Account> mAccountList = new ArrayList<>();
+
     private SecuXAccountManager mAccountManager = new SecuXAccountManager();
     Map<String, Double> mCoinRate = null;
 
+    private ArrayList<Account> mAccountList = new ArrayList<>();
+    private ArrayList<PaymentHistoryModel> mPaymentHistoryList = new ArrayList<>();
+
     public void loadAccounts(){
         mAccountList.clear();
-        Account accountDCT = new Account("ifun-886-936105934-6", SecuXCoinType.DCT, "", "", "", 0.0, 0.0);
-        //Account accountIFC = new Account("ifun-886-900-112233-44", SecuXCoinType.IFC, "", "", "", 0.0, 0.0);
+        Account accountIFC = new Account("ifun-886-936105934-6", SecuXCoinType.IFC, "", "", "", 0.0, 0.0);
+        Account accountDCT = new Account("ifun-886-900-112233-44", SecuXCoinType.DCT, "", "", "", 0.0, 0.0);
 
+        mAccountList.add(accountIFC);
         mAccountList.add(accountDCT);
 
     }
@@ -75,6 +79,20 @@ public class Wallet {
         }else{
             Log.i("secux-paymentkit-exp", "get account balance failed!");
         }
+    }
 
+    public ArrayList<PaymentHistoryModel> getPaymentHistory(){
+        return mPaymentHistoryList;
+    }
+
+    public void addPaymentHistoryItem(PaymentHistoryModel paymentItem){
+        mPaymentHistoryList.add(paymentItem);
+    }
+
+    public Double getUSDValue(Double value, @SecuXCoinType.CoinType String type){
+        if (mCoinRate.containsKey(type)){
+            return value * mCoinRate.get(type);
+        }
+        return 0.0;
     }
 }

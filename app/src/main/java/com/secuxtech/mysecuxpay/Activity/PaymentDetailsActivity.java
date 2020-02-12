@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.secuxtech.mysecuxpay.Model.Account;
+import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
 import com.secuxtech.mysecuxpay.Model.Wallet;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
@@ -25,12 +26,17 @@ import com.secuxtech.paymentkit.SecuXCoinType;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class PaymentDetailsActivity extends BaseActivity {
 
     public static final String PAYMENT_RESULT = "com.secux.MySecuXPay.PAYMENTRESULT";
     public static final String PAYMENT_AMOUNT = "com.secux.MySecuXPay.AMOUNT";
     public static final String PAYMENT_COINTYPE = "com.secux.MySecuXPay.COINTYPE";
     public static final String PAYMENT_STORENAME = "com.secux.MySecuXPay.STORENAME";
+    public static final String PAYMENT_DATE = "com.secux.MySecuXPay.DATE";
 
     private Context mContext = this;
     private ProgressBar mProgressBar;
@@ -136,13 +142,20 @@ public class PaymentDetailsActivity extends BaseActivity {
                 @Override
                 public void run() {
                     CommonProgressDialog.dismiss();
+
+                    SimpleDateFormat simpleDateFormat =
+                            new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+                    Date date = Calendar.getInstance().getTime();
+                    String dateStr = simpleDateFormat.format(date);
                     if (ret){
                         //Toast toast = Toast.makeText(mContext, "Payment successful!", Toast.LENGTH_LONG);
                         //toast.setGravity(Gravity.CENTER,0,0);
                         //toast.show();
 
+                        Double usdAmount = Wallet.getInstance().getUSDValue(Double.valueOf(mAmount), mAccount.mCoinType);
 
-
+                        PaymentHistoryModel payment = new PaymentHistoryModel(mAccount, mStoreName, dateStr, String.format("%.2f", usdAmount), mAmount);
+                        Wallet.getInstance().addPaymentHistoryItem(payment);
                     }else{
                         //Toast toast = Toast.makeText(mContext, "Payment failed! Error: " + errorMsg, Toast.LENGTH_LONG);
                         //toast.setGravity(Gravity.CENTER,0,0);
@@ -155,6 +168,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                     newIntent.putExtra(PAYMENT_RESULT, ret);
                     newIntent.putExtra(PAYMENT_STORENAME, mStoreName);
                     newIntent.putExtra(PAYMENT_AMOUNT, amountStr);
+                    newIntent.putExtra(PAYMENT_DATE, dateStr);
                     startActivity(newIntent);
                 }
             });
