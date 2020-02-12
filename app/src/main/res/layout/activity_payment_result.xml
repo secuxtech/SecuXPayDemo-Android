@@ -4,6 +4,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.PaymentResultActivity">
+    tools:context=".Activity.PaymentResultActivity"
+    android:background="@color/colorPageBkg">
+
+    <ImageView
+        android:id="@+id/imageView_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/payment_success"
+        android:visibility="visible"
+        android:layout_marginTop="51.33dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/textView_payment_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Successful"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="#1F2020"
+
+        android:layout_marginTop="18.33dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView_result"/>
+
+    <TextView
+        android:id="@+id/textView_payment_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 IFC"
+        android:textSize="42dp"
+        android:textColor="#1F2020"
+
+        android:layout_marginTop="11dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_payment_result"/>
+
+    <TextView
+        android:id="@+id/textView_payment_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="date"
+        android:textSize="16dp"
+        android:textColor="#BEBEBE"
+
+        android:layout_marginTop="11dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_payment_amount"/>
+
+
+    <include android:id="@+id/layout_payment_resultinfo"
+        android:layout_width="match_parent"
+        android:layout_height="102dp"
+        layout="@layout/cardview_payment_resultinfo_layout"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginRight="26dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_payment_date"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

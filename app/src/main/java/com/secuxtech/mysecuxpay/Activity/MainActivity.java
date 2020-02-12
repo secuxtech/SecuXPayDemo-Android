@@ -1,8 +1,6 @@
 package com.secuxtech.mysecuxpay.Activity;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+
 
 import android.Manifest;
 
@@ -10,22 +8,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.view.Gravity;
 import android.view.View;
 
 import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.secuxtech.mysecuxpay.Model.Wallet;
 import com.secuxtech.mysecuxpay.R;
 
 import com.google.zxing.integration.android.IntentResult;
+import com.secuxtech.paymentkit.SecuXCoinType;
 
-public class MainActivity extends AppCompatActivity {
+import org.json.JSONObject;
+
+public class MainActivity extends BaseActivity {
 
     private final Context mContext = this;
     private IntentIntegrator scanIntegrator;
@@ -45,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorTitle)); // Navigation bar the soft bottom of some phones like nexus and some Samsung note series
-        getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorTitle));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.colorTitle)));
     }
 
 
@@ -74,11 +72,47 @@ public class MainActivity extends AppCompatActivity {
             final String scanContent = scanningResult.getContents();
             if (scanContent.length() > 0)
             {
+                String amount;
+                @SecuXCoinType.CoinType String coinType;
+                try{
+                    JSONObject payinfoJson = new JSONObject(scanContent);
+                    amount = payinfoJson.getString("amount");
+                    coinType = payinfoJson.getString("coinType");
+                    String devid = payinfoJson.getString("deviceID");
+
+                    if (Wallet.getInstance().getAccount(coinType) == null){
+                        Toast toast = Toast.makeText(mContext, "Unsupported Coin Type!", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER,0,0);
+                        toast.show();
+                        return;
+                    }
+
+                }catch (Exception e){
+                    Toast toast = Toast.makeText(mContext, "Invalid QRCode!", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                    return;
+                }
+
+
                 //Toast.makeText(getApplicationContext(),"Scan result: "+scanContent, Toast.LENGTH_LONG).show();
                 Intent newIntent = new Intent(this, PaymentDetailsActivity.class);
                 newIntent.putExtra(PAYMENT_INFO, scanContent);
+                newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, amount);
+                newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, coinType);
                 startActivity(newIntent);
                 return;
+
+                /*
+                String amountStr = "10 IFC";
+
+                Intent newIntent = new Intent(mContext, PaymentResultActivity.class);
+                newIntent.putExtra(PaymentDetailsActivity.PAYMENT_RESULT, false);
+                newIntent.putExtra(PaymentDetailsActivity.PAYMENT_STORENAME, "My test Store");
+                newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, amountStr);
+                startActivity(newIntent);
+
+                 */
             }
 
         }

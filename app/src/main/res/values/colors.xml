@@ -6,5 +6,8 @@
     <color name="colorTitle">#1F2020</color>
     <color name="colorPageBkg">#F8F8F8</color>
     <color name="colorAccountInfo">#707070</color>
+    <color name="colorHistoryInfo">#707070</color>
     <color name="colorLabel">#1F2020</color>
+    <color name="colorPaymentSuccess">#51B924</color>
+    <color name="colorPaymentFail">#FA7B7B</color>
 </resources>

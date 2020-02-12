@@ -1,4 +1,4 @@
-package com.secuxtech.mysecuxpay.Activity;
+package com.secuxtech.mysecuxpay.Utility;
 
 
 import android.content.Context;
@@ -24,14 +24,14 @@ public class CommonProgressDialog {
         mAlertDialog.setCanceledOnTouchOutside(false);
 
         TextView tvTip = loadView.findViewById(R.id.tvTip);
-        tvTip.setText("載入中...");
+        tvTip.setText("");
 
         mAlertDialog.show();
     }
 
     public static void showProgressDialog(Context context, String tip) {
         if (TextUtils.isEmpty(tip)) {
-            tip = "載入中...";
+            tip = "";
         }
 
         if (mAlertDialog == null) {
@@ -46,6 +46,11 @@ public class CommonProgressDialog {
         tvTip.setText(tip);
 
         mAlertDialog.show();
+    }
+
+    public static void setProgressTip(String tip){
+        TextView tvTip = mAlertDialog.findViewById(R.id.tvTip);
+        tvTip.setText(tip);
     }
 
 
