@@ -11,7 +11,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.NFC" />
 
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
     <uses-feature android:name="android.hardware.camera" />
 
     <application
@@ -22,14 +26,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.PaymentHistoryActivity"></activity>
-        <activity android:name=".Activity.PaymentResultActivity" />
-        <activity android:name=".Activity.PaymentDetailsActivity" />
+
+
+        <activity android:name=".Activity.PaymentHistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
+        </activity>
+        <activity android:name=".Activity.PaymentResultActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
+        </activity>
+        <activity android:name=".Activity.PaymentDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
+        </activity>
         <activity android:name=".Activity.BaseActivity" />
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

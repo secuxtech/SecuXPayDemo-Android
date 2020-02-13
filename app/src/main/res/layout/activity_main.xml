@@ -8,7 +8,6 @@
 
 
     <Button
-        android:id="@+id/scan_qrcode_button"
         android:layout_width="200dp"
         android:layout_height="60dp"
         android:layout_marginTop="20sp"
@@ -16,10 +15,36 @@
 
         android:onClick="onScanQRCodeButtonClick"
         android:text="Scan QRCode"
+
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_main_history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="Payment History"
+        android:textSize="19dp"
+        android:textColor="@color/colorLabel"
+
+        android:onClick="onHistoryButtonClick"
+
+        android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
+    <View
+        android:layout_width="150dp"
+        android:layout_height="1dp"
+        android:background="#000000"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="28dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,16 +4,27 @@ package com.secuxtech.mysecuxpay.Activity;
 
 import android.Manifest;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -27,15 +38,23 @@ import com.secuxtech.paymentkit.SecuXCoinType;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
 public class MainActivity extends BaseActivity {
 
-    private final Context mContext = this;
-    private IntentIntegrator scanIntegrator;
+    private final Context       mContext = this;
+    private IntentIntegrator    mScanIntegrator;
+
+    private NfcAdapter          mNfcAdapter;
+    private PendingIntent       mPendingIntent = null;
 
     public static final String PAYMENT_INFO = "com.secux.MySecuXPay.PAYMENTINFO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mShowBackButton = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -47,22 +66,140 @@ public class MainActivity extends BaseActivity {
             }
         }
 
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (null == mNfcAdapter) {
+            Toast toast = Toast.makeText(mContext, "No NFC support!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            finish();
+
+            return;
+        }
+
+        if (!mNfcAdapter.isEnabled()) {
+            Toast toast = Toast.makeText(mContext, "Please turn on NFC!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            finish();
+            return;
+        }
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        if (mPendingIntent == null) {
+            mPendingIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+        }
+
+        mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent != null) {
+            processIntent(intent);
+        }
+    }
+
+    private void processIntent(final Intent intent) {
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        Ndef ndef = Ndef.get(tag);
+
+        try {
+            ndef.close();
+            ndef.connect();
+            NdefMessage messages = ndef.getNdefMessage();
+
+            String amount="", devid="", cointype="";
+            for (final NdefRecord record : messages.getRecords()) {
+                byte[] payload = record.getPayload();
+                String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
+                int languageCodeLength = payload[0] & 0077;
+                String languageCode = new String(payload, 1, languageCodeLength, "US-ASCII");
+                String text = new String(payload, languageCodeLength + 1,
+                        payload.length - languageCodeLength - 1, textEncoding);
+
+                if (text.contains("amount:")){
+                    amount = text.substring(text.indexOf(':')+1);
+                }else if (text.contains("DevID:")){
+                    devid = text.substring(text.indexOf(':')+1);
+                }else if (text.contains("CoinType:")){
+                    cointype = text.substring(text.indexOf(':')+1);
+                }
+
+                Log.i("MySecuXPay", text);
+            }
+
+            if (amount.length()>0 && devid.length()>0 && cointype.length()>0){
+                JSONObject payinfoJson = new JSONObject();
+                payinfoJson.put("amount", amount);
+                payinfoJson.put("deviceID", devid);
+                payinfoJson.put("coinType", cointype);
+
+                handlePaymentInfoJson(payinfoJson);
+            }
+
+        } catch (Exception e) {
+            Log.e("MySecuXPay", e.getLocalizedMessage());
+        } finally {
+            try {
+                ndef.close();
+            } catch (Exception e) {
+                Log.e("MySecuXPay", "close ndef failed! " + e.getLocalizedMessage());
+            }
+        }
+    }
 
     public void onScanQRCodeButtonClick(View v)
     {
-        View button1 = (View) findViewById(R.id.scan_qrcode_button);
-
-        scanIntegrator = new IntentIntegrator(MainActivity.this);
-        scanIntegrator.setPrompt("Start scan ...");
-        scanIntegrator.setTimeout(300000);
-        scanIntegrator.initiateScan();
+        mScanIntegrator = new IntentIntegrator(MainActivity.this);
+        mScanIntegrator.setPrompt("Start scan ...");
+        mScanIntegrator.setTimeout(30000);
+        mScanIntegrator.initiateScan();
     }
 
+    public void onHistoryButtonClick(View v){
+        Intent newIntent = new Intent(mContext, PaymentHistoryActivity.class);
+        startActivity(newIntent);
+    }
 
+    public void handlePaymentInfoJson(JSONObject payinfoJson){
+        String amount;
+        @SecuXCoinType.CoinType String coinType;
+        try{
+            amount = payinfoJson.getString("amount");
+            coinType = payinfoJson.getString("coinType");
+            String devid = payinfoJson.getString("deviceID");
 
+            if (Wallet.getInstance().getAccount(coinType) == null){
+                Toast toast = Toast.makeText(mContext, "Unsupported Coin Type!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                return;
+            }
+
+        }catch (Exception e){
+            Toast toast = Toast.makeText(mContext, "Invalid QRCode!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }
+
+        //Toast.makeText(getApplicationContext(),"Scan result: "+scanContent, Toast.LENGTH_LONG).show();
+        Intent newIntent = new Intent(this, PaymentDetailsActivity.class);
+        newIntent.putExtra(PAYMENT_INFO, payinfoJson.toString());
+        newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, amount);
+        newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, coinType);
+        startActivity(newIntent);
+        return;
+
+    }
 
     //Callback when scan done
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
@@ -73,6 +210,15 @@ public class MainActivity extends BaseActivity {
             final String scanContent = scanningResult.getContents();
             if (scanContent.length() > 0)
             {
+                try{
+                    JSONObject payinfoJson = new JSONObject(scanContent);
+                    handlePaymentInfoJson(payinfoJson);
+                }catch (Exception e) {
+                }
+            }
+
+
+                /*
                 String amount;
                 @SecuXCoinType.CoinType String coinType;
                 try{
@@ -95,17 +241,7 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
-                for (int i=0; i<20; i++){
-                    PaymentHistoryModel payment = new PaymentHistoryModel(Wallet.getInstance().getAccount(SecuXCoinType.IFC), "Store ttt", "2020-12-12 11:12:11", String.format("%.2f", 5.68), "234");
-                    Wallet.getInstance().addPaymentHistoryItem(payment);
-                }
 
-
-                Intent ttIntent = new Intent(mContext, PaymentHistoryActivity.class);
-                startActivity(ttIntent);
-                return;
-
-/*
                 //Toast.makeText(getApplicationContext(),"Scan result: "+scanContent, Toast.LENGTH_LONG).show();
                 Intent newIntent = new Intent(this, PaymentDetailsActivity.class);
                 newIntent.putExtra(PAYMENT_INFO, scanContent);
@@ -113,7 +249,9 @@ public class MainActivity extends BaseActivity {
                 newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, coinType);
                 startActivity(newIntent);
                 return;
-*/
+
+                 */
+
                 /*
                 String amountStr = "10 IFC";
 
@@ -124,7 +262,7 @@ public class MainActivity extends BaseActivity {
                 startActivity(newIntent);
 
                  */
-            }
+
 
         }
 

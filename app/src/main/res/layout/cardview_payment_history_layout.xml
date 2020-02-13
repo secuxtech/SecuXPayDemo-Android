@@ -50,6 +50,7 @@
                         android:id="@+id/textView_history_account"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginLeft="3dp"
                         android:layout_marginTop="3dp"
                         android:text="Account test name name"

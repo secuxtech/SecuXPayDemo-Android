@@ -86,7 +86,7 @@ public class Wallet {
     }
 
     public void addPaymentHistoryItem(PaymentHistoryModel paymentItem){
-        mPaymentHistoryList.add(paymentItem);
+        mPaymentHistoryList.add(0, paymentItem);
     }
 
     public Double getUSDValue(Double value, @SecuXCoinType.CoinType String type){

@@ -53,10 +53,17 @@ public class CommonProgressDialog {
         tvTip.setText(tip);
     }
 
+    public static boolean isProgressVisible(){
+        if (mAlertDialog == null) {
+            return false;
+        }
+        return true;
+    }
 
     public static void dismiss() {
         if (mAlertDialog != null && mAlertDialog.isShowing()) {
             mAlertDialog.dismiss();
+            mAlertDialog = null;
         }
     }
 }

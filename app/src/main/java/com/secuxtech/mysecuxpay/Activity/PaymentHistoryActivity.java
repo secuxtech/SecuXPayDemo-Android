@@ -1,7 +1,12 @@
 package com.secuxtech.mysecuxpay.Activity;
 
+import android.app.ActionBar;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -19,12 +24,21 @@ public class PaymentHistoryActivity extends BaseActivity {
         setContentView(R.layout.activity_payment_history);
 
 
-
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView_history_list);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
 
-        mAdapter = new HistoryListAdapter(this, Wallet.getInstance().getPaymentHistory());
-        recyclerView.setAdapter(mAdapter);
+        if (Wallet.getInstance().getPaymentHistory().size()>0){
+            mAdapter = new HistoryListAdapter(this, Wallet.getInstance().getPaymentHistory());
+            recyclerView.setAdapter(mAdapter);
+        }else{
+            TextView textviewNoHistory = findViewById(R.id.textView_nohistory);
+            textviewNoHistory.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
+
 
     }
+
+
 }

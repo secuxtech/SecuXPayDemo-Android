@@ -40,8 +40,8 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
         holder.textviewStoreName.setText(historyItem.mStoreName);
         holder.textviewAccount.setText(historyItem.mAccount.mName);
         holder.textviewDate.setText(historyItem.mDate);
-        holder.textviewUsdbalance.setText(historyItem.mUsbBalance);
-        holder.textviewBalance.setText(historyItem.mBalance);
+        holder.textviewUsdbalance.setText("$ " + historyItem.mUsbBalance);
+        holder.textviewBalance.setText(historyItem.mBalance + " " + historyItem.mAccount.mCoinType);
         holder.imageviewCoinLogo.setImageResource(historyItem.mAccount.GetCoinLogo());
     }
 

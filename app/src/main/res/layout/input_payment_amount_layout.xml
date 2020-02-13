@@ -13,7 +13,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/editText_payment_amount"
+        android:id="@+id/editText_paymentinput_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -24,13 +24,13 @@
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/textView_coinname"
-        app:layout_constraintRight_toRightOf="@id/imageView_coinlogo"
+        app:layout_constraintLeft_toLeftOf="@id/textView_paymentinput_coinname"
+        app:layout_constraintRight_toRightOf="@id/imageView_paymentinput_coinlogo"
 
         android:background="@null"/>
 
     <ImageView
-        android:id="@+id/imageView_coinlogo"
+        android:id="@+id/imageView_paymentinput_coinlogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/dct"
@@ -40,7 +40,7 @@
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
-        android:id="@+id/textView_coinname"
+        android:id="@+id/textView_paymentinput_coinname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DCT"

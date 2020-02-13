@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -25,6 +26,8 @@ import com.secuxtech.paymentkit.SecuXAccount;
 import com.secuxtech.paymentkit.SecuXCoinType;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,8 +71,17 @@ public class PaymentDetailsActivity extends BaseActivity {
         TextView textviewName = findViewById(R.id.textView_account_name);
         textviewName.setText(mAccount.mName);
 
-        TextView textviewAmount = findViewById(R.id.editText_payment_amount);
+        TextView textviewAmount = findViewById(R.id.editText_paymentinput_amount);
         textviewAmount.setText(mAmount);
+
+        ImageView payinputLogo = findViewById(R.id.imageView_paymentinput_coinlogo);
+        payinputLogo.setImageResource(mAccount.GetCoinLogo());
+
+        TextView textviewPaymentType = findViewById(R.id.textView_paymentinput_coinname);
+        textviewPaymentType.setText(mAccount.mCoinType);
+
+        Button buttonPay = findViewById(R.id.button_pay);
+        buttonPay.setEnabled(false);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar_load_storeinfo);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -103,10 +115,11 @@ public class PaymentDetailsActivity extends BaseActivity {
             }
         }).start();
 
-        EditText edittext = findViewById(R.id.editText_payment_amount);
+        EditText edittext = findViewById(R.id.editText_paymentinput_amount);
         edittext.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
+
                 if (!hasFocus) {
                     hideKeyboard(v);
                 }
@@ -121,13 +134,27 @@ public class PaymentDetailsActivity extends BaseActivity {
 
 
     public void onPayButtonClick(View v){
+
+        EditText edittextAmount = findViewById(R.id.editText_paymentinput_amount);
+        String strAmount = edittextAmount.getText().toString();
+        if (strAmount.length() == 0){
+            Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }
+        Double payAmount = Double.valueOf(strAmount);
+        if (payAmount<=0 || payAmount > mAccount.mBalance){
+            Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }
+
         CommonProgressDialog.showProgressDialog(mContext);
 
-        //Create SecuX account
-        SecuXAccount account = new SecuXAccount("ifun-886-936105934-6", SecuXCoinType.DCT, "", "", "");
-
         //Use SecuXManager to do payment, must call in main thread
-        mPaymentManager.doPayment(mContext, account, mStoreName, mPaymentInfo);
+        mPaymentManager.doPayment(mContext, mAccount, mStoreName, mPaymentInfo);
 
     }
 
@@ -156,6 +183,7 @@ public class PaymentDetailsActivity extends BaseActivity {
 
                         PaymentHistoryModel payment = new PaymentHistoryModel(mAccount, mStoreName, dateStr, String.format("%.2f", usdAmount), mAmount);
                         Wallet.getInstance().addPaymentHistoryItem(payment);
+
                     }else{
                         //Toast toast = Toast.makeText(mContext, "Payment failed! Error: " + errorMsg, Toast.LENGTH_LONG);
                         //toast.setGravity(Gravity.CENTER,0,0);
@@ -207,6 +235,9 @@ public class PaymentDetailsActivity extends BaseActivity {
                         imgviewStoreLogo.setVisibility(View.VISIBLE);
 
                         imgviewStoreLogo.setImageBitmap(storeLogo);
+
+                        Button buttonPay = findViewById(R.id.button_pay);
+                        buttonPay.setEnabled(true);
                     }else{
                         Toast toast = Toast.makeText(mContext, "Get store info. failed!", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER,0,0);
