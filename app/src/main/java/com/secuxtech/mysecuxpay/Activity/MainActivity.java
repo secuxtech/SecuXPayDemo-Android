@@ -22,11 +22,14 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+
+import androidx.appcompat.app.ActionBar;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
@@ -65,6 +68,18 @@ public class MainActivity extends BaseActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
+
+        /*
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+
+        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.layout_secux_logo_imageview, null);
+
+        actionBar.setTitle("");
+        actionBar.setCustomView(v);
+
+         */
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (null == mNfcAdapter) {
@@ -133,7 +148,7 @@ public class MainActivity extends BaseActivity {
                     cointype = text.substring(text.indexOf(':')+1);
                 }
 
-                Log.i("MySecuXPay", text);
+                Log.i(TAG, text);
             }
 
             if (amount.length()>0 && devid.length()>0 && cointype.length()>0){
@@ -146,12 +161,12 @@ public class MainActivity extends BaseActivity {
             }
 
         } catch (Exception e) {
-            Log.e("MySecuXPay", e.getLocalizedMessage());
+            Log.e(TAG, e.getLocalizedMessage());
         } finally {
             try {
                 ndef.close();
             } catch (Exception e) {
-                Log.e("MySecuXPay", "close ndef failed! " + e.getLocalizedMessage());
+                Log.e(TAG, "close ndef failed! " + e.getLocalizedMessage());
             }
         }
     }
@@ -204,6 +219,7 @@ public class MainActivity extends BaseActivity {
     //Callback when scan done
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
+
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanningResult != null && scanningResult.getContents() != null)
         {
@@ -213,6 +229,8 @@ public class MainActivity extends BaseActivity {
                 try{
                     JSONObject payinfoJson = new JSONObject(scanContent);
                     handlePaymentInfoJson(payinfoJson);
+
+                    return;
                 }catch (Exception e) {
                 }
             }

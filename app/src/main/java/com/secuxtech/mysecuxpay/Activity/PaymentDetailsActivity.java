@@ -1,9 +1,15 @@
 package com.secuxtech.mysecuxpay.Activity;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+
+import android.hardware.biometrics.BiometricPrompt;
+import android.hardware.fingerprint.FingerprintManager;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -17,21 +23,24 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.secuxtech.mysecuxpay.Model.Account;
 import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
 import com.secuxtech.mysecuxpay.Model.Wallet;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
-import com.secuxtech.paymentkit.SecuXAccount;
+
 import com.secuxtech.paymentkit.SecuXCoinType;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
 
-import org.w3c.dom.Text;
-
+import java.security.Signature;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import static androidx.arch.core.executor.ArchTaskExecutor.getMainThreadExecutor;
 
 public class PaymentDetailsActivity extends BaseActivity {
 
@@ -50,14 +59,13 @@ public class PaymentDetailsActivity extends BaseActivity {
     private String mStoreName = "";
     private String mAmount = "";
     private @SecuXCoinType.CoinType String mType;
-
     private Account mAccount = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_details);
-
 
         Intent intent = getIntent();
         mPaymentInfo = intent.getStringExtra(MainActivity.PAYMENT_INFO);
@@ -155,7 +163,6 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         //Use SecuXManager to do payment, must call in main thread
         mPaymentManager.doPayment(mContext, mAccount, mStoreName, mPaymentInfo);
-
     }
 
 

@@ -12,6 +12,7 @@ import com.secuxtech.mysecuxpay.R;
 
 public class BaseActivity extends AppCompatActivity {
 
+    public static final String TAG = "MySecuXPay";
     protected boolean mShowBackButton = true;
 
     @Override
