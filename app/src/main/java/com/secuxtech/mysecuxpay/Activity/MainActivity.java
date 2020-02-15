@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -20,6 +22,8 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Parcelable;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -76,17 +80,16 @@ public class MainActivity extends BaseActivity {
             Toast toast = Toast.makeText(mContext, "No NFC support!", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
-            finish();
-
-            return;
+            //finish();
+            //return;
         }
 
         if (!mNfcAdapter.isEnabled()) {
             Toast toast = Toast.makeText(mContext, "Please turn on NFC!", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
-            finish();
-            return;
+            //finish();
+            //return;
         }
 
     }
@@ -94,6 +97,8 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+
 
         if (mPendingIntent == null) {
             mPendingIntent = PendingIntent.getActivity(this, 0,
@@ -115,6 +120,15 @@ public class MainActivity extends BaseActivity {
     private void processIntent(final Intent intent) {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Ndef ndef = Ndef.get(tag);
+
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(500);
+        }
 
         try {
             ndef.close();
@@ -151,7 +165,7 @@ public class MainActivity extends BaseActivity {
             }
 
         } catch (Exception e) {
-            Log.e(TAG, e.getLocalizedMessage());
+            //Log.e(TAG, e.getLocalizedMessage());
         } finally {
             try {
                 ndef.close();

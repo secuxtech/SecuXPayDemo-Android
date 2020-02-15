@@ -6,12 +6,22 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 
 import android.hardware.biometrics.BiometricPrompt;
 import android.hardware.fingerprint.FingerprintManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.media.ToneGenerator;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -143,7 +153,6 @@ public class PaymentDetailsActivity extends BaseActivity {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-
     public void onPayButtonClick(View v){
 
         mMonitorPaymentTimer.schedule(new TimerTask() {
@@ -152,6 +161,38 @@ public class PaymentDetailsActivity extends BaseActivity {
                 if (CommonProgressDialog.isProgressVisible()){
                     mPaymentManager.cancelPayment();
                     CommonProgressDialog.dismiss();
+
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate(500);
+                    }
+
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    AssetFileDescriptor afd = getResources().openRawResourceFd(R.raw.payfailed);
+                    try {
+                        mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                        afd.close();
+                        mediaPlayer.prepare();
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                    mediaPlayer.start();
+
+                    /*
+                    try {
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        r.play();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    */
+
+
+
                     String amountStr = mAmount + " " + mType;
 
                     SimpleDateFormat simpleDateFormat =
@@ -204,6 +245,17 @@ public class PaymentDetailsActivity extends BaseActivity {
                     mMonitorPaymentTimer.cancel();
                     CommonProgressDialog.dismiss();
 
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        //deprecated in API 26
+                        v.vibrate(500);
+                    }
+
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    AssetFileDescriptor afd;
+
                     SimpleDateFormat simpleDateFormat =
                             new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
                     Date date = Calendar.getInstance().getTime();
@@ -218,11 +270,27 @@ public class PaymentDetailsActivity extends BaseActivity {
                         PaymentHistoryModel payment = new PaymentHistoryModel(mAccount, mStoreName, dateStr, String.format("%.2f", usdAmount), mAmount);
                         Wallet.getInstance().addPaymentHistoryItem(payment);
 
+
+                        afd = getResources().openRawResourceFd(R.raw.paysuccess);
+
+
                     }else{
                         //Toast toast = Toast.makeText(mContext, "Payment failed! Error: " + errorMsg, Toast.LENGTH_LONG);
                         //toast.setGravity(Gravity.CENTER,0,0);
                         //toast.show();
+
+
+                        afd = getResources().openRawResourceFd(R.raw.payfailed);
                     }
+
+                    try {
+                        mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                        afd.close();
+                        mediaPlayer.prepare();
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                    mediaPlayer.start();
 
                     String amountStr = mAmount.toString() + " " + mType;
 
