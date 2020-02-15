@@ -1,12 +1,17 @@
 package com.secuxtech.mysecuxpay.Activity;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import android.app.ActionBar;
+
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.secuxtech.mysecuxpay.R;
 
@@ -27,5 +32,18 @@ public class BaseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(mShowBackButton);
         //getSupportActionBar().setTitle("Home");
         //getSupportActionBar().setSubtitle("sairam");
+
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+
+        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.layout_secux_logo_imageview, null);
+
+        actionBar.setTitle("");
+        actionBar.setCustomView(v);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
     }
 }

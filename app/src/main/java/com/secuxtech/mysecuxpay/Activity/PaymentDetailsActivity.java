@@ -39,6 +39,8 @@ import java.security.Signature;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static androidx.arch.core.executor.ArchTaskExecutor.getMainThreadExecutor;
 
@@ -61,6 +63,7 @@ public class PaymentDetailsActivity extends BaseActivity {
     private @SecuXCoinType.CoinType String mType;
     private Account mAccount = null;
 
+    private Timer mMonitorPaymentTimer = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +146,29 @@ public class PaymentDetailsActivity extends BaseActivity {
 
     public void onPayButtonClick(View v){
 
+        mMonitorPaymentTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (CommonProgressDialog.isProgressVisible()){
+                    mPaymentManager.cancelPayment();
+                    CommonProgressDialog.dismiss();
+                    String amountStr = mAmount + " " + mType;
+
+                    SimpleDateFormat simpleDateFormat =
+                            new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+                    Date date = Calendar.getInstance().getTime();
+                    String dateStr = simpleDateFormat.format(date);
+
+                    Intent newIntent = new Intent(mContext, PaymentResultActivity.class);
+                    newIntent.putExtra(PAYMENT_RESULT, false);
+                    newIntent.putExtra(PAYMENT_STORENAME, mStoreName);
+                    newIntent.putExtra(PAYMENT_AMOUNT, amountStr);
+                    newIntent.putExtra(PAYMENT_DATE, dateStr);
+                    startActivity(newIntent);
+                }
+            }
+        }, 10000);
+
         EditText edittextAmount = findViewById(R.id.editText_paymentinput_amount);
         String strAmount = edittextAmount.getText().toString();
         if (strAmount.length() == 0){
@@ -175,6 +201,7 @@ public class PaymentDetailsActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    mMonitorPaymentTimer.cancel();
                     CommonProgressDialog.dismiss();
 
                     SimpleDateFormat simpleDateFormat =

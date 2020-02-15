@@ -69,17 +69,7 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        /*
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true);
 
-        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflator.inflate(R.layout.layout_secux_logo_imageview, null);
-
-        actionBar.setTitle("");
-        actionBar.setCustomView(v);
-
-         */
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (null == mNfcAdapter) {

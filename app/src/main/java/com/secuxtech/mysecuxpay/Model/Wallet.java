@@ -37,10 +37,11 @@ public class Wallet {
         mAccountList.clear();
         Account accountIFC = new Account("ifun-886-936105934-6", SecuXCoinType.IFC, "", "", "", 0.0, 0.0);
         Account accountDCT = new Account("ifun-886-900-112233-44", SecuXCoinType.DCT, "", "", "", 0.0, 0.0);
+        Account accountLBR = new Account("Alice-Libra", SecuXCoinType.LBR, "", "842d1a7e65d0e7788564dc03ea4bbe4e15d57719003bee6981f1a6d765443822", "", 0.0, 0.0);
 
         mAccountList.add(accountIFC);
         mAccountList.add(accountDCT);
-
+        mAccountList.add(accountLBR);
     }
 
     public ArrayList<Account> getAccounts(){
