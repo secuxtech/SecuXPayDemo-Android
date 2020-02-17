@@ -5,6 +5,7 @@ package com.secuxtech.mysecuxpay.Activity;
 import android.Manifest;
 
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -45,9 +46,6 @@ import com.secuxtech.paymentkit.SecuXCoinType;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 public class MainActivity extends BaseActivity {
 
@@ -73,8 +71,6 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-
-
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (null == mNfcAdapter) {
             Toast toast = Toast.makeText(mContext, "No NFC support!", Toast.LENGTH_LONG);
@@ -92,13 +88,30 @@ public class MainActivity extends BaseActivity {
             //return;
         }
 
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+            Toast toast = Toast.makeText(mContext, "The phone DOES NOT support bluetooth! APP will terminate!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            finish();
+            return;
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enabled :)
+            Toast toast = Toast.makeText(mContext, "Please turn on Bluetooth!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+
+        } else {
+            // Bluetooth is enabled
+
+        }
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-
 
         if (mPendingIntent == null) {
             mPendingIntent = PendingIntent.getActivity(this, 0,
@@ -223,7 +236,6 @@ public class MainActivity extends BaseActivity {
     //Callback when scan done
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
-
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanningResult != null && scanningResult.getContents() != null)
         {
