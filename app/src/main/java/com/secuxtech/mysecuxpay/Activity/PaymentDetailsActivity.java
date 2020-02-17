@@ -3,6 +3,7 @@ package com.secuxtech.mysecuxpay.Activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -155,6 +156,33 @@ public class PaymentDetailsActivity extends BaseActivity {
 
     public void onPayButtonClick(View v){
 
+        EditText edittextAmount = findViewById(R.id.editText_paymentinput_amount);
+        String strAmount = edittextAmount.getText().toString();
+        if (strAmount.length() == 0){
+            Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }
+        Double payAmount = Double.valueOf(strAmount);
+        if (payAmount<=0 || payAmount > mAccount.mBalance){
+            Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }
+
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mBluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enabled :)
+            Toast toast = Toast.makeText(mContext, "Please turn on Bluetooth! Payment abort!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.BOTTOM,0,200);
+            toast.show();
+            return;
+        }
+
+        /*
         mMonitorPaymentTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -181,17 +209,6 @@ public class PaymentDetailsActivity extends BaseActivity {
                     }
                     mediaPlayer.start();
 
-                    /*
-                    try {
-                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                        r.play();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    */
-
-
 
                     String amountStr = mAmount + " " + mType;
 
@@ -209,22 +226,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                 }
             }
         }, 10000);
-
-        EditText edittextAmount = findViewById(R.id.editText_paymentinput_amount);
-        String strAmount = edittextAmount.getText().toString();
-        if (strAmount.length() == 0){
-            Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER,0,0);
-            toast.show();
-            return;
-        }
-        Double payAmount = Double.valueOf(strAmount);
-        if (payAmount<=0 || payAmount > mAccount.mBalance){
-            Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER,0,0);
-            toast.show();
-            return;
-        }
+        */
 
         CommonProgressDialog.showProgressDialog(mContext);
 
@@ -275,9 +277,14 @@ public class PaymentDetailsActivity extends BaseActivity {
 
 
                     }else{
-                        //Toast toast = Toast.makeText(mContext, "Payment failed! Error: " + errorMsg, Toast.LENGTH_LONG);
-                        //toast.setGravity(Gravity.CENTER,0,0);
-                        //toast.show();
+                        String message = errorMsg;
+                        if (message.contains("Scan timeout")){
+                            message = "No payment device!";
+                        }
+
+                        Toast toast = Toast.makeText(mContext, "Payment failed! Error: " + message, Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER,0,0);
+                        toast.show();
 
 
                         afd = getResources().openRawResourceFd(R.raw.payfailed);
