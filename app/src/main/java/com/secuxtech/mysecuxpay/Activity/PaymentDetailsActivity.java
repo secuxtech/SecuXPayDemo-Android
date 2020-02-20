@@ -1,6 +1,7 @@
 package com.secuxtech.mysecuxpay.Activity;
 
 import android.Manifest;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
@@ -34,17 +35,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.secuxtech.mysecuxpay.Model.Account;
-import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
-import com.secuxtech.mysecuxpay.Model.Wallet;
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.AccountUtil;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 
-import com.secuxtech.paymentkit.SecuXCoinType;
+import com.secuxtech.paymentkit.SecuXAccountManager;
+import com.secuxtech.paymentkit.SecuXCoinAccount;
+import com.secuxtech.paymentkit.SecuXCoinTokenBalance;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
+import com.secuxtech.paymentkit.SecuXUserAccount;
 
 import java.security.Signature;
 import java.text.SimpleDateFormat;
@@ -60,6 +61,7 @@ public class PaymentDetailsActivity extends BaseActivity {
     public static final String PAYMENT_RESULT = "com.secux.MySecuXPay.PAYMENTRESULT";
     public static final String PAYMENT_AMOUNT = "com.secux.MySecuXPay.AMOUNT";
     public static final String PAYMENT_COINTYPE = "com.secux.MySecuXPay.COINTYPE";
+    public static final String PAYMENT_TOKEN = "com.secux.MySecuXPay.TOKEN";
     public static final String PAYMENT_STORENAME = "com.secux.MySecuXPay.STORENAME";
     public static final String PAYMENT_DATE = "com.secux.MySecuXPay.DATE";
 
@@ -71,8 +73,11 @@ public class PaymentDetailsActivity extends BaseActivity {
     private String mPaymentInfo = ""; //"{\"amount\":\"11\", \"coinType\":\"DCT\", \"deviceID\":\"4ab10000726b\"}";
     private String mStoreName = "";
     private String mAmount = "";
-    private @SecuXCoinType.CoinType String mType;
-    private Account mAccount = null;
+    private String mType = "";
+    private String mToken = "";
+
+    private SecuXCoinAccount mCoinAccount = null;
+    private SecuXCoinTokenBalance mTokenBalance = null;
 
     private Timer mMonitorPaymentTimer = new Timer();
 
@@ -85,22 +90,25 @@ public class PaymentDetailsActivity extends BaseActivity {
         mPaymentInfo = intent.getStringExtra(MainActivity.PAYMENT_INFO);
         mAmount = intent.getStringExtra(PAYMENT_AMOUNT);
         mType = intent.getStringExtra(PAYMENT_COINTYPE);
-        mAccount = Wallet.getInstance().getAccount(mType);
+        mToken = intent.getStringExtra(PAYMENT_TOKEN);
+
+        mCoinAccount = Setting.getInstance().mAccount.getCoinAccount(mType);
+        mTokenBalance = mCoinAccount.getBalance(mToken);
 
         ImageView imageviewLogo = findViewById(R.id.imageView_account_coinlogo);
-        imageviewLogo.setImageResource(mAccount.GetCoinLogo());
+        imageviewLogo.setImageResource(AccountUtil.getCoinLogo(mType));
 
         TextView textviewName = findViewById(R.id.textView_account_name);
-        textviewName.setText(mAccount.mName);
+        textviewName.setText(Setting.getInstance().mAccount.getCoinAccount(mType).mAccountName);
 
         TextView textviewAmount = findViewById(R.id.editText_paymentinput_amount);
         textviewAmount.setText(mAmount);
 
         ImageView payinputLogo = findViewById(R.id.imageView_paymentinput_coinlogo);
-        payinputLogo.setImageResource(mAccount.GetCoinLogo());
+        payinputLogo.setImageResource(AccountUtil.getCoinLogo(mType));
 
         TextView textviewPaymentType = findViewById(R.id.textView_paymentinput_coinname);
-        textviewPaymentType.setText(mAccount.mCoinType);
+        textviewPaymentType.setText(mToken);
 
         Button buttonPay = findViewById(R.id.button_pay);
         buttonPay.setEnabled(false);
@@ -111,28 +119,28 @@ public class PaymentDetailsActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
-                Wallet.getInstance().getCoinToUsdRate();
-                Wallet.getInstance().getAccountBalance(mAccount);
+                SecuXAccountManager accMgr = new SecuXAccountManager();
+                accMgr.getAccountBalance(Setting.getInstance().mAccount, mType, mToken);
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        TextView textviewName = findViewById(R.id.textView_account_name);
+                        textviewName.setText(Setting.getInstance().mAccount.getCoinAccount(mType).mAccountName);
+
                         TextView textviewBalance = findViewById(R.id.textView_account_balance);
-                        textviewBalance.setText(String.format("%.2f", mAccount.mBalance) + " " + mType);
+                        textviewBalance.setText(String.format("%.2f", mTokenBalance.mFormattedBalance) + " " + mToken);
 
                         TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
-                        textviewUsdbalance.setText(String.format("$ %.2f", mAccount.mUsdBanance));
+                        textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
                     }
                 });
-
 
                 //Must set the callback for the SecuXPaymentManager
                 mPaymentManager.setSecuXPaymentManagerCallback(mPaymentMgrCallback);
 
                 //Use SecuXPaymentManager to get store info.
                 mPaymentManager.getStoreInfo(getBaseContext(), mPaymentInfo);
-
 
             }
         }).start();
@@ -149,11 +157,6 @@ public class PaymentDetailsActivity extends BaseActivity {
         });
     }
 
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     public void onPayButtonClick(View v){
 
         EditText edittextAmount = findViewById(R.id.editText_paymentinput_amount);
@@ -165,7 +168,7 @@ public class PaymentDetailsActivity extends BaseActivity {
             return;
         }
         Double payAmount = Double.valueOf(strAmount);
-        if (payAmount<=0 || payAmount > mAccount.mBalance){
+        if (payAmount<=0 || payAmount > mTokenBalance.mFormattedBalance){
             Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
@@ -231,7 +234,7 @@ public class PaymentDetailsActivity extends BaseActivity {
         CommonProgressDialog.showProgressDialog(mContext);
 
         //Use SecuXManager to do payment, must call in main thread
-        mPaymentManager.doPayment(mContext, mAccount, mStoreName, mPaymentInfo);
+        mPaymentManager.doPayment(mContext, Setting.getInstance().mAccount, mStoreName, mPaymentInfo);
     }
 
 
@@ -267,10 +270,10 @@ public class PaymentDetailsActivity extends BaseActivity {
                         //toast.setGravity(Gravity.CENTER,0,0);
                         //toast.show();
 
-                        Double usdAmount = Wallet.getInstance().getUSDValue(Double.valueOf(mAmount), mAccount.mCoinType);
+                        //Double usdAmount = Wallet.getInstance().getUSDValue(Double.valueOf(mAmount), mAccount.mCoinType);
 
-                        PaymentHistoryModel payment = new PaymentHistoryModel(mAccount, mStoreName, dateStr, String.format("%.2f", usdAmount), mAmount);
-                        Wallet.getInstance().addPaymentHistoryItem(payment);
+                        //PaymentHistoryModel payment = new PaymentHistoryModel(mAccount, mStoreName, dateStr, String.format("%.2f", usdAmount), mAmount);
+                        //Wallet.getInstance().addPaymentHistoryItem(payment);
 
 
                         afd = getResources().openRawResourceFd(R.raw.paysuccess);
