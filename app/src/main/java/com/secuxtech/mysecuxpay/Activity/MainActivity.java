@@ -10,14 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import android.content.res.AssetFileDescriptor;
-import android.media.MediaPlayer;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,12 +33,13 @@ import android.widget.Toolbar;
 import androidx.appcompat.app.ActionBar;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
-import com.secuxtech.mysecuxpay.Model.Wallet;
+
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 
 import com.google.zxing.integration.android.IntentResult;
-import com.secuxtech.paymentkit.SecuXCoinType;
+import com.secuxtech.paymentkit.SecuXCoinAccount;
+
 
 import org.json.JSONObject;
 
@@ -148,7 +145,7 @@ public class MainActivity extends BaseActivity {
             ndef.connect();
             NdefMessage messages = ndef.getNdefMessage();
 
-            String amount="", devid="", cointype="";
+            String amount="", devid="", cointype="", token="";
             for (final NdefRecord record : messages.getRecords()) {
                 byte[] payload = record.getPayload();
                 String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
@@ -163,6 +160,8 @@ public class MainActivity extends BaseActivity {
                     devid = text.substring(text.indexOf(':')+1);
                 }else if (text.contains("CoinType:")){
                     cointype = text.substring(text.indexOf(':')+1);
+                }else if (text.contains("Token:")){
+                    token = text.substring(text.indexOf(':')+1);
                 }
 
                 Log.i(TAG, text);
@@ -173,6 +172,7 @@ public class MainActivity extends BaseActivity {
                 payinfoJson.put("amount", amount);
                 payinfoJson.put("deviceID", devid);
                 payinfoJson.put("coinType", cointype);
+                payinfoJson.put("token", token);
 
                 handlePaymentInfoJson(payinfoJson);
             }
@@ -202,15 +202,23 @@ public class MainActivity extends BaseActivity {
     }
 
     public void handlePaymentInfoJson(JSONObject payinfoJson){
-        String amount;
-        @SecuXCoinType.CoinType String coinType;
+        String amount, coinType, token;
+
         try{
             amount = payinfoJson.getString("amount");
             coinType = payinfoJson.getString("coinType");
             String devid = payinfoJson.getString("deviceID");
+            token = payinfoJson.getString("token");
 
-            if (Wallet.getInstance().getAccount(coinType) == null){
+            SecuXCoinAccount coinAcc = Setting.getInstance().mAccount.getCoinAccount(coinType);
+
+            if (coinAcc == null){
                 Toast toast = Toast.makeText(mContext, "Unsupported Coin Type!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                return;
+            }else if (coinAcc.getBalance(token)==null){
+                Toast toast = Toast.makeText(mContext, "Unsupported Token Type!", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
                 return;
@@ -228,6 +236,7 @@ public class MainActivity extends BaseActivity {
         newIntent.putExtra(PAYMENT_INFO, payinfoJson.toString());
         newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, amount);
         newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, coinType);
+        newIntent.putExtra(PaymentDetailsActivity.PAYMENT_TOKEN, token);
         startActivity(newIntent);
         return;
 
