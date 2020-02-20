@@ -10,17 +10,25 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.secuxtech.mysecuxpay.Model.PaymentHistoryModel;
+import com.secuxtech.mysecuxpay.Interface.OnListScrollListener;
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.AccountUtil;
+import com.secuxtech.paymentkit.SecuXCoinAccount;
+import com.secuxtech.paymentkit.SecuXPaymentHistory;
 
 import java.util.List;
+
+
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder> {
 
     private Context mContext;
-    private List<PaymentHistoryModel> mHistoryList;
+    private List<SecuXPaymentHistory> mHistoryList;
 
-    public HistoryListAdapter(Context context, List<PaymentHistoryModel> histryList) {
+    OnListScrollListener mOnListScrollListener = null;
+
+    public HistoryListAdapter(Context context, List<SecuXPaymentHistory> histryList) {
         this.mContext = context;
         this.mHistoryList = histryList;
     }
@@ -35,19 +43,36 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     @Override
     public void onBindViewHolder(final HistoryListAdapter.ViewHolder holder, int position) {
-        final PaymentHistoryModel historyItem = mHistoryList.get(position);
+        final SecuXPaymentHistory historyItem = mHistoryList.get(position);
 
         holder.textviewStoreName.setText(historyItem.mStoreName);
-        holder.textviewAccount.setText(historyItem.mAccount.mName);
-        holder.textviewDate.setText(historyItem.mDate);
-        holder.textviewUsdbalance.setText("$ " + historyItem.mUsbBalance);
-        holder.textviewBalance.setText(historyItem.mBalance + " " + historyItem.mAccount.mCoinType);
-        holder.imageviewCoinLogo.setImageResource(historyItem.mAccount.GetCoinLogo());
+
+        SecuXCoinAccount coinAcc = Setting.getInstance().mAccount.getCoinAccount(historyItem.mCoinType);
+        if (coinAcc!=null){
+            holder.textviewAccount.setText(coinAcc.mAccountName);
+        }else{
+            holder.textviewAccount.setText("N/A");
+        }
+
+        holder.textviewDate.setText(historyItem.mTransactionTime);
+        holder.textviewUsdbalance.setText("$ " + 0);
+        holder.textviewBalance.setText(historyItem.mAmount + " " + historyItem.mToken);
+        holder.imageviewCoinLogo.setImageResource(AccountUtil.getCoinLogo(historyItem.mCoinType));
+
+        if (position == mHistoryList.size()-1 && mOnListScrollListener!=null){
+            mOnListScrollListener.onBottomReached(position);
+        }else if (position==0){
+            mOnListScrollListener.onBottomReached(position);
+        }
     }
 
     @Override
     public int getItemCount() {
         return mHistoryList.size();
+    }
+
+    public void setOnListScrollListener(OnListScrollListener listener){
+        mOnListScrollListener = listener;
     }
 
 
