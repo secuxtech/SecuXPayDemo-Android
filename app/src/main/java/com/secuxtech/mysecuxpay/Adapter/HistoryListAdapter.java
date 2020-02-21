@@ -56,7 +56,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
         holder.textviewDate.setText(historyItem.mTransactionTime);
         holder.textviewUsdbalance.setText("$ " + 0);
-        holder.textviewBalance.setText(historyItem.mAmount + " " + historyItem.mToken);
+        holder.textviewBalance.setText(historyItem.mAmount.toString() + " " + historyItem.mToken);
         holder.imageviewCoinLogo.setImageResource(AccountUtil.getCoinLogo(historyItem.mCoinType));
 
         if (position == mHistoryList.size()-1 && mOnListScrollListener!=null){
