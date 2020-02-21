@@ -168,7 +168,7 @@ public class PaymentDetailsActivity extends BaseActivity {
             return;
         }
         Double payAmount = Double.valueOf(strAmount);
-        if (payAmount<=0 || payAmount > mTokenBalance.mFormattedBalance){
+        if (payAmount<=0 || payAmount > mTokenBalance.mFormattedBalance.doubleValue()){
             Toast toast = Toast.makeText(mContext, "Invalid payment amount!", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
