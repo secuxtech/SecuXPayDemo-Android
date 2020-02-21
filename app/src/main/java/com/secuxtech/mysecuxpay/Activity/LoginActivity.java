@@ -114,7 +114,7 @@ public class LoginActivity extends BaseActivity {
                     public void run() {
                         CommonProgressDialog.dismiss();
                         if (ret.first) {
-                            Intent newIntent = new Intent(mContext, MainActivity.class);
+                            Intent newIntent = new Intent(mContext, CoinAccountListActivity.class);
                             startActivity(newIntent);
                         }else{
                             showMessageInMain("Login failed! Error: " + ret.second);
