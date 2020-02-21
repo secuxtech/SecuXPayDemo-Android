@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MySecuXPay</string>
+    <string name="main_nav_accounts">Accounts</string>
+    <string name="main_nav_payment">Payment</string>
+    <string name="account_operation_transactions">Transactions</string>
+    <string name="account_operation_send">Send</string>
+    <string name="account_operation_receive">Receive</string>
 </resources>
