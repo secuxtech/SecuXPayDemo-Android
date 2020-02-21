@@ -24,14 +24,17 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 import com.secuxtech.mysecuxpay.Model.Setting;
@@ -104,6 +107,9 @@ public class MainActivity extends BaseActivity {
 
         }
 
+        BottomNavigationView navigationView = findViewById(R.id.navigation_main);
+        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        MenuItem menuItem = navigationView.getMenu().getItem(1).setChecked(true);
     }
 
     @Override
@@ -126,6 +132,27 @@ public class MainActivity extends BaseActivity {
             processIntent(intent);
         }
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_main_accounts:
+
+                    Intent newIntent = new Intent(mContext, CoinAccountListActivity.class);
+                    startActivity(newIntent);
+                    return true;
+                case R.id.navigation_main_payment:
+
+                    return true;
+
+            }
+            return false;
+        }
+
+    };
 
     private void processIntent(final Intent intent) {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
