@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
@@ -76,8 +77,9 @@ public class TokenTransHistoryAdapter extends RecyclerView.Adapter<TokenTransHis
             textviewBalance = itemView.findViewById(R.id.textView_transcardview_balance);
             imageviewTypeLogo = itemView.findViewById(R.id.imageView_transcardview_type);
             textviewTimestamp = itemView.findViewById(R.id.textView_transcardview_timestamp);
+            CardView cardView = itemView.findViewById(R.id.cardView_account_transactions);
 
-            itemView.setOnClickListener(new View.OnClickListener(){
+            cardView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     if (mClickListener != null)
