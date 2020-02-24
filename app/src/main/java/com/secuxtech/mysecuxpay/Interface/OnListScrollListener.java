@@ -5,5 +5,4 @@ package com.secuxtech.mysecuxpay.Interface;
  */
 public interface OnListScrollListener {
     void onBottomReached(int position);
-    void onTopReached(int position);
 }
