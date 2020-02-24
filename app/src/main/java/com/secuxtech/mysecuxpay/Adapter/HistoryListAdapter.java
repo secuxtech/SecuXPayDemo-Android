@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
 import com.secuxtech.mysecuxpay.Interface.OnListScrollListener;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
@@ -20,17 +22,19 @@ import com.secuxtech.paymentkit.SecuXPaymentHistory;
 import java.util.List;
 
 
-
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder> {
 
     private Context mContext;
     private List<SecuXPaymentHistory> mHistoryList;
 
+    private AdapterItemClickListener mClickListener;
+
     OnListScrollListener mOnListScrollListener = null;
 
-    public HistoryListAdapter(Context context, List<SecuXPaymentHistory> histryList) {
+    public HistoryListAdapter(Context context, List<SecuXPaymentHistory> histryList, AdapterItemClickListener clickListener) {
         this.mContext = context;
         this.mHistoryList = histryList;
+        this.mClickListener = clickListener;
     }
 
     @Override
@@ -55,13 +59,12 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
         }
 
         holder.textviewDate.setText(historyItem.mTransactionTime);
-        holder.textviewUsdbalance.setText("$ " + 0);
+        //holder.textviewUsdbalance.setText("$ " + 0);
+        holder.textviewTransCode.setText(historyItem.mTransactionCode);
         holder.textviewBalance.setText(historyItem.mAmount.toString() + " " + historyItem.mToken);
         holder.imageviewCoinLogo.setImageResource(AccountUtil.getCoinLogo(historyItem.mCoinType));
 
         if (position == mHistoryList.size()-1 && mOnListScrollListener!=null){
-            mOnListScrollListener.onBottomReached(position);
-        }else if (position==0){
             mOnListScrollListener.onBottomReached(position);
         }
     }
@@ -75,9 +78,13 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
         mOnListScrollListener = listener;
     }
 
+    public void updateHistoryList(List<SecuXPaymentHistory> histryList){
+        mHistoryList = histryList;
+    }
+
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        TextView textviewStoreName, textviewAccount, textviewDate, textviewUsdbalance, textviewBalance;
+        TextView textviewStoreName, textviewAccount, textviewDate, textviewTransCode, textviewBalance;  //textviewUsdbalance,
         ImageView imageviewCoinLogo;
         ViewHolder(View itemView) {
             super(itemView);
@@ -85,10 +92,20 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
             textviewStoreName = itemView.findViewById(R.id.textView_history_storename);
             textviewAccount = itemView.findViewById(R.id.textView_history_account);
             textviewDate = itemView.findViewById(R.id.textView_history_date);
-            textviewUsdbalance = itemView.findViewById(R.id.textView_history_usdbalance);
+            //textviewUsdbalance = itemView.findViewById(R.id.textView_history_usdbalance);
             textviewBalance = itemView.findViewById(R.id.textView_history_balance);
             imageviewCoinLogo = itemView.findViewById(R.id.imageView_history_coinlogo);
+            textviewTransCode = itemView.findViewById(R.id.textView_history_code);
 
+            CardView cardView = itemView.findViewById(R.id.cardView_payment_history);
+
+            cardView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    if (mClickListener != null)
+                        mClickListener.onItemClick(v, getAdapterPosition());
+                }
+            });
         }
 
     }
