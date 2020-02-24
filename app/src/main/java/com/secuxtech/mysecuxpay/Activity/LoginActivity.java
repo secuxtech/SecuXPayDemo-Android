@@ -98,6 +98,10 @@ public class LoginActivity extends BaseActivity {
 
     public void onLoginButtonClick(View v)
     {
+        //Intent newIntent = new Intent(mContext, MainActivity.class);
+        //startActivity(newIntent);
+
+
         String email = mEdittextEmail.getText().toString();
         String pwd = mEdittextPwd.getText().toString();
         Setting.getInstance().mAccount = new SecuXUserAccount("maochuntest6@secuxtech.com", "0975123456", "12345678");
@@ -124,7 +128,6 @@ public class LoginActivity extends BaseActivity {
 
             }
         }).start();
-
 
 
     }
