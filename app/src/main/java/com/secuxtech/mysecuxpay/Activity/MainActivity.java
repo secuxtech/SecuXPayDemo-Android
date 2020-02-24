@@ -220,6 +220,7 @@ public class MainActivity extends BaseActivity {
         mScanIntegrator = new IntentIntegrator(MainActivity.this);
         mScanIntegrator.setPrompt("Start scan ...");
         mScanIntegrator.setTimeout(30000);
+        mScanIntegrator.setCaptureActivity(ScanQRCodeActivity.class);
         mScanIntegrator.initiateScan();
     }
 
