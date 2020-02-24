@@ -28,18 +28,23 @@ public class TokenTransHistoryActivity extends BaseActivity {
     public final static String TRANSACTION_HISTORY_COINTYPE = "com.secuxtech.MySecuXPay.TRANSHISCOINTYPE";
     public final static String TRANSACTION_HISTORY_TOKEN = "com.secuxtech.MySecuXPay.TRANSHISTOKEN";
 
-    SecuXAccountManager mAccountManager = new SecuXAccountManager();
-    ArrayList<SecuXTransferHistory> mTransHistoryArray = new ArrayList<>();
-    TokenTransHistoryAdapter mAdapter;
 
-    String mCoinType;
-    String mToken;
+    private SecuXAccountManager mAccountManager = new SecuXAccountManager();
+    private ArrayList<SecuXTransferHistory> mTransHistoryArray = new ArrayList<>();
+    private TokenTransHistoryAdapter mAdapter;
+
+    private String mCoinType;
+    private String mToken;
 
     AdapterItemClickListener mItemClickListener = new AdapterItemClickListener() {
         @Override
         public void onItemClick(View view, int position) {
             SecuXTransferHistory history = mTransHistoryArray.get(position);
-            Log.i(TAG, history.mTimestamp + " " + history.mAmountUsd.toString());
+            Log.i(TAG, history.mDetailslUrl);
+
+            Intent newIntent = new Intent(mContext, TokenTransferDetailsActivity.class);
+            newIntent.putExtra(TokenTransferDetailsActivity.TRANSACTION_HISTORY_DETAIL_URL, history.mDetailslUrl);
+            startActivity(newIntent);
         }
     };
 
