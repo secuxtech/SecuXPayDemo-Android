@@ -28,7 +28,12 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.TokenTransferDetailsActivity"></activity>
+        <activity android:name=".Activity.ScanQRCodeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
+        </activity>
+        <activity android:name=".Activity.TokenTransferDetailsActivity" />
         <activity android:name=".Activity.TokenTransferActivity" />
         <activity android:name=".Activity.TokenTransHistoryActivity" />
         <activity android:name=".Activity.CoinAccountListActivity" />
