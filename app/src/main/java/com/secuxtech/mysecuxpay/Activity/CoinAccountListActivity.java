@@ -106,7 +106,7 @@ public class CoinAccountListActivity extends BaseActivity {
                     return true;
                 case R.id.navigation_main_payment:
 
-                    Intent newIntent = new Intent(mContext, MainActivity.class);
+                    Intent newIntent = new Intent(mContext, PaymentMainActivity.class);
                     startActivity(newIntent);
 
                     return true;
