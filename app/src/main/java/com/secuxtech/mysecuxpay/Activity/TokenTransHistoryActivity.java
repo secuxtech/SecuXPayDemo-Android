@@ -19,6 +19,7 @@ import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
+import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 import com.secuxtech.paymentkit.SecuXTransferHistory;
 
 import java.util.ArrayList;
@@ -65,8 +66,8 @@ public class TokenTransHistoryActivity extends BaseActivity {
             @Override
             public void run() {
 
-                Pair<Boolean, String> ret = mAccountManager.getTransferHistory(Setting.getInstance().mAccount, mCoinType, mToken, 1, 20, mTransHistoryArray);
-                if (!ret.first){
+                Pair<Integer, String> ret = mAccountManager.getTransferHistory(Setting.getInstance().mAccount, mCoinType, mToken, 1, 20, mTransHistoryArray);
+                if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
                     showMessageInMain("Get payment history failed! Error: " + ret.second);
                 }
 
