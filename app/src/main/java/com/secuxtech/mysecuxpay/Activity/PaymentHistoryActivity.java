@@ -4,12 +4,10 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -23,7 +21,7 @@ import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.paymentkit.SecuXPaymentHistory;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
-import com.secuxtech.paymentkit.SecuXTransferHistory;
+import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 
 import java.util.ArrayList;
 
@@ -36,7 +34,7 @@ public class PaymentHistoryActivity extends BaseActivity {
     SwipeRefreshLayout mSwiper;
 
     private Integer mCurrentHisPageIdx = 1;
-    private Integer mLoadItemCount = 5;
+    private Integer mLoadItemCount = 20;
 
     AdapterItemClickListener mItemClickListener = new AdapterItemClickListener() {
         @Override
@@ -57,13 +55,14 @@ public class PaymentHistoryActivity extends BaseActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView_history_list);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-        recyclerView.setOnScrollChangeListener(mScrollListener);
+        //recyclerView.setOnScrollChangeListener(mScrollListener);
         loadPaymentHistory();
 
         mSwiper = findViewById(R.id.swiper_payment_history_list);
         mSwiper.setOnRefreshListener(mRefreshListener);
     }
 
+    /*
     private RecyclerView.OnScrollChangeListener mScrollListener = new RecyclerView.OnScrollChangeListener() {
 
 
@@ -73,6 +72,7 @@ public class PaymentHistoryActivity extends BaseActivity {
             Log.i(TAG, "dy=" + String.valueOf(scrollY));
         }
     };
+    */
 
     private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -82,9 +82,8 @@ public class PaymentHistoryActivity extends BaseActivity {
                 @Override
                 public void run() {
                     final ArrayList<SecuXPaymentHistory> hisArr = new ArrayList<>();
-                    Pair<Boolean, String> ret = mPaymentManager.getPaymentHistory(Setting.getInstance().mAccount, "SPC", 1, mLoadItemCount, hisArr);
-                    if (!ret.first){
-                        showMessageInMain("Get payment history failed! Error: " + ret.second);
+                    if (!loadHistoryData(1, mLoadItemCount, hisArr)){
+                        return;
                     }
 
                     runOnUiThread(new Runnable() {
@@ -112,10 +111,8 @@ public class PaymentHistoryActivity extends BaseActivity {
             @Override
             public void run() {
 
-                Pair<Boolean, String> ret = mPaymentManager.getPaymentHistory(Setting.getInstance().mAccount, "SPC", 1, mLoadItemCount, mPayHisArr);
-                if (!ret.first){
-                    showMessageInMain("Get payment history failed! Error: " + ret.second);
-
+                if (!loadHistoryData(1, mLoadItemCount, mPayHisArr)){
+                    return;
                 }
 
                 runOnUiThread(new Runnable() {
@@ -151,16 +148,9 @@ public class PaymentHistoryActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 final ArrayList<SecuXPaymentHistory> hisArr = new ArrayList<>();
-                Pair<Boolean, String> ret = mPaymentManager.getPaymentHistory(Setting.getInstance().mAccount, "SPC", mCurrentHisPageIdx+1, mLoadItemCount, hisArr);
-                if (!ret.first){
-                    showMessageInMain("Get payment history failed! Error: " + ret.second);
-                }
-
-                if (hisArr.size()==0){
+                if (!loadHistoryData(mCurrentHisPageIdx+1, mLoadItemCount, hisArr))
                     return;
-                }
 
                 mCurrentHisPageIdx += 1;
                 runOnUiThread(new Runnable() {
@@ -175,5 +165,28 @@ public class PaymentHistoryActivity extends BaseActivity {
                 });
             }
         }).start();
+    }
+
+    private boolean loadHistoryData(int pageIdx, int count, ArrayList<SecuXPaymentHistory> historyArr){
+        Pair<Integer, String> ret = mPaymentManager.getPaymentHistory(Setting.getInstance().mAccount, "SPC", pageIdx, count, historyArr);
+        if (ret.first== SecuXServerRequestHandler.SecuXRequestUnauthorized){
+            showMessageInMain("Login timeout! Please login again!");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent newIntent = new Intent(mContext, LoginActivity.class);
+                    startActivity(newIntent);
+                }
+            });
+
+            return false;
+
+        }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
+            showMessageInMain("Get payment history failed! Error: " + ret.second);
+            return false;
+        }
+
+        return true;
     }
 }
