@@ -12,6 +12,7 @@ import android.widget.EditText;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
+import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
 public class RegistryActivity extends BaseActivity {
@@ -66,9 +67,9 @@ public class RegistryActivity extends BaseActivity {
                 String password = mEditTextPassword.getText().toString();
 
                 SecuXUserAccount account = new SecuXUserAccount(email, phone, password);
-                Pair<Boolean, String> ret = mAccountManager.registerUserAccount(account);
+                Pair<Integer, String> ret = mAccountManager.registerUserAccount(account);
                 CommonProgressDialog.dismiss();
-                if (ret.first) {
+                if (ret.first== SecuXServerRequestHandler.SecuXRequestOK) {
                     Intent newIntent = new Intent(mContext, MainActivity.class);
                     startActivity(newIntent);
                 }else {
