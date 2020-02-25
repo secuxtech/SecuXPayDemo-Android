@@ -28,40 +28,46 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activity.PaymentMainActivity"></activity>
         <activity android:name=".Activity.ScanQRCodeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
+                android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
-        <activity android:name=".Activity.TokenTransferDetailsActivity" />
-        <activity android:name=".Activity.TokenTransferActivity" />
+        <activity android:name=".Activity.TokenTransferDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.PaymentHistoryActivity" />
+        </activity>
         <activity android:name=".Activity.TokenTransHistoryActivity" />
         <activity android:name=".Activity.CoinAccountListActivity" />
         <activity android:name=".Activity.RegistryActivity" />
         <activity android:name=".Activity.LoginActivity">
+
+        </activity>
+        <activity android:name=".Activity.PaymentHistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
+        </activity>
+        <activity android:name=".Activity.PaymentResultActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
+        </activity>
+        <activity android:name=".Activity.PaymentDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
+        </activity>
+        <activity android:name=".Activity.BaseActivity" />
+        <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.PaymentHistoryActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
-        </activity>
-        <activity android:name=".Activity.PaymentResultActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
-        </activity>
-        <activity android:name=".Activity.PaymentDetailsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.secuxtech.mysecuxpay.Activity.MainActivity" />
-        </activity>
-        <activity android:name=".Activity.BaseActivity" />
-        <activity android:name=".Activity.MainActivity" />
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
