@@ -62,6 +62,7 @@ public class PaymentDetailsActivity extends BaseActivity {
     public static final String PAYMENT_AMOUNT = "com.secux.MySecuXPay.AMOUNT";
     public static final String PAYMENT_COINTYPE = "com.secux.MySecuXPay.COINTYPE";
     public static final String PAYMENT_TOKEN = "com.secux.MySecuXPay.TOKEN";
+    public static final String PAYMENT_DEVID = "com.secux.MySecuXPay.DEVID";
     public static final String PAYMENT_STORENAME = "com.secux.MySecuXPay.STORENAME";
     public static final String PAYMENT_DATE = "com.secux.MySecuXPay.DATE";
 
@@ -75,6 +76,7 @@ public class PaymentDetailsActivity extends BaseActivity {
     private String mAmount = "";
     private String mType = "";
     private String mToken = "";
+    private String mDevID = "";
 
     private SecuXCoinAccount mCoinAccount = null;
     private SecuXCoinTokenBalance mTokenBalance = null;
@@ -87,10 +89,11 @@ public class PaymentDetailsActivity extends BaseActivity {
         setContentView(R.layout.activity_payment_details);
 
         Intent intent = getIntent();
-        mPaymentInfo = intent.getStringExtra(MainActivity.PAYMENT_INFO);
+        mPaymentInfo = intent.getStringExtra(PaymentMainActivity.PAYMENT_INFO);
         mAmount = intent.getStringExtra(PAYMENT_AMOUNT);
         mType = intent.getStringExtra(PAYMENT_COINTYPE);
         mToken = intent.getStringExtra(PAYMENT_TOKEN);
+        mDevID = intent.getStringExtra(PAYMENT_DEVID);
 
         mCoinAccount = Setting.getInstance().mAccount.getCoinAccount(mType);
         mTokenBalance = mCoinAccount.getBalance(mToken);
@@ -140,7 +143,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                 mPaymentManager.setSecuXPaymentManagerCallback(mPaymentMgrCallback);
 
                 //Use SecuXPaymentManager to get store info.
-                mPaymentManager.getStoreInfo(getBaseContext(), mPaymentInfo);
+                mPaymentManager.getStoreInfo(mDevID);
 
             }
         }).start();
@@ -358,6 +361,19 @@ public class PaymentDetailsActivity extends BaseActivity {
                 }
             });
 
+        }
+
+        @Override
+        public void userAccountUnauthorized(){
+            showMessageInMain("User account authorization timeout! Please login again");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent newIntent = new Intent(mContext, LoginActivity.class);
+                    startActivity(newIntent);
+                }
+            });
         }
 
     };
