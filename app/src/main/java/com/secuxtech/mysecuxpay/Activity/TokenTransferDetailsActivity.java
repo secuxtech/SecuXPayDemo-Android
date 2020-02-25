@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -24,23 +26,21 @@ public class TokenTransferDetailsActivity extends BaseActivity {
         Intent intent = getIntent();
         mDetailUrl = intent.getStringExtra(TRANSACTION_HISTORY_DETAIL_URL);
 
-        //CommonProgressDialog.showProgressDialog(mContext, "Loading...");
+        CommonProgressDialog.showProgressDialog(mContext, "Loading...");
         final WebView detailWebView = findViewById(R.id.webView_transfer_details);
         detailWebView.getSettings().setBuiltInZoomControls(true);
+        detailWebView.getSettings().setJavaScriptEnabled(true);
         detailWebView.setWebViewClient(new WebViewClient(){
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                //CommonProgressDialog.dismiss();
+                CommonProgressDialog.dismiss();
+                Log.i(TAG, "onPageFinished");
             }
         });
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                detailWebView.loadUrl("https://explorer-testnet.decent.ch/#/transaction/b8f86e3fcd86907ecb8f0e22de0af78bb1922063"); //mDetailUrl);
-            }
-        });
+        detailWebView.loadUrl("https://explorer-testnet.decent.ch/#/transaction/b8f86e3fcd86907ecb8f0e22de0af78bb1922063"); //mDetailUrl);
+
 
 
 
