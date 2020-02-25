@@ -19,6 +19,7 @@ import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
 
+import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
 public class LoginActivity extends BaseActivity {
@@ -69,6 +70,7 @@ public class LoginActivity extends BaseActivity {
         public void afterTextChanged(Editable s) {
             Log.i(TAG, "afterTextChanged");
 
+
         }
     };
 
@@ -83,13 +85,21 @@ public class LoginActivity extends BaseActivity {
                             event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                 if (event == null || !event.isShiftPressed()) {
                     // the user is done typing.
-
+                    Log.i(TAG, "Edit done");
                     return true; // consume.
                 }
             }
             return false; // pass on to other listeners.
         }
     };
+
+    private void validateEmail(){
+
+    }
+
+    private void validatePassword(){
+
+    }
 
     public void onSignupButtonClick(View v){
         Intent newIntent = new Intent(mContext, RegistryActivity.class);
@@ -111,13 +121,13 @@ public class LoginActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Pair<Boolean, String> ret = mAccountManager.loginUserAccount(Setting.getInstance().mAccount);
+                final Pair<Integer, String> ret = mAccountManager.loginUserAccount(Setting.getInstance().mAccount);
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         CommonProgressDialog.dismiss();
-                        if (ret.first) {
+                        if (ret.first== SecuXServerRequestHandler.SecuXRequestOK) {
                             Intent newIntent = new Intent(mContext, CoinAccountListActivity.class);
                             startActivity(newIntent);
                         }else{
