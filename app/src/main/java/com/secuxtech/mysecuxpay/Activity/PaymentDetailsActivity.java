@@ -3,6 +3,7 @@ package com.secuxtech.mysecuxpay.Activity;
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -35,6 +36,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
+import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
+import com.secuxtech.mysecuxpay.Model.CoinTokenAccount;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.AccountUtil;
@@ -49,6 +57,7 @@ import com.secuxtech.paymentkit.SecuXUserAccount;
 
 import java.security.Signature;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -65,6 +74,8 @@ public class PaymentDetailsActivity extends BaseActivity {
     public static final String PAYMENT_DEVID = "com.secux.MySecuXPay.DEVID";
     public static final String PAYMENT_STORENAME = "com.secux.MySecuXPay.STORENAME";
     public static final String PAYMENT_DATE = "com.secux.MySecuXPay.DATE";
+    public static final String PAYMENT_SHOWACCOUNTSEL = "com.secux.MySecuXPay.SHOWACCOUNTSEL";
+
 
     private Context mContext = this;
     private ProgressBar mProgressBar;
@@ -83,6 +94,9 @@ public class PaymentDetailsActivity extends BaseActivity {
 
     private Timer mMonitorPaymentTimer = new Timer();
 
+    private Dialog mAccountSelDialog;
+    private boolean mShowAccountSel = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +108,7 @@ public class PaymentDetailsActivity extends BaseActivity {
         mType = intent.getStringExtra(PAYMENT_COINTYPE);
         mToken = intent.getStringExtra(PAYMENT_TOKEN);
         mDevID = intent.getStringExtra(PAYMENT_DEVID);
+        mShowAccountSel = intent.getBooleanExtra(PAYMENT_SHOWACCOUNTSEL, false);
 
         mCoinAccount = Setting.getInstance().mAccount.getCoinAccount(mType);
         mTokenBalance = mCoinAccount.getBalance(mToken);
@@ -105,7 +120,11 @@ public class PaymentDetailsActivity extends BaseActivity {
         textviewName.setText(Setting.getInstance().mAccount.getCoinAccount(mType).mAccountName);
 
         TextView textviewAmount = findViewById(R.id.editText_paymentinput_amount);
-        textviewAmount.setText(mAmount);
+        if (Double.valueOf(mAmount) > 0.0){
+            textviewAmount.setText(mAmount);
+        }else{
+            textviewName.requestFocus();
+        }
 
         ImageView payinputLogo = findViewById(R.id.imageView_paymentinput_coinlogo);
         payinputLogo.setImageResource(AccountUtil.getCoinLogo(mType));
@@ -123,7 +142,12 @@ public class PaymentDetailsActivity extends BaseActivity {
             @Override
             public void run() {
                 SecuXAccountManager accMgr = new SecuXAccountManager();
-                accMgr.getAccountBalance(Setting.getInstance().mAccount, mType, mToken);
+
+                if (mShowAccountSel){
+                    accMgr.getAccountBalance(Setting.getInstance().mAccount);
+                }else{
+                    accMgr.getAccountBalance(Setting.getInstance().mAccount, mType, mToken);
+                }
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -136,6 +160,15 @@ public class PaymentDetailsActivity extends BaseActivity {
 
                         TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
                         textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
+
+
+                        CardView cardViewAccount = findViewById(R.id.cardView_account);
+                        cardViewAccount.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onClickAccount(v);
+                            }
+                        });
                     }
                 });
 
@@ -240,6 +273,60 @@ public class PaymentDetailsActivity extends BaseActivity {
         mPaymentManager.doPayment(mContext, Setting.getInstance().mAccount, mStoreName, mPaymentInfo);
     }
 
+    public void onClickAccount(View v){
+        if (!mShowAccountSel){
+            return;
+        }
+        Log.i(TAG, "click the account");
+        showDialog(this);
+    }
+
+    public void showDialog(Activity activity){
+
+        mAccountSelDialog = new Dialog(activity);
+        // dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mAccountSelDialog.setCancelable(true);
+        mAccountSelDialog.setContentView(R.layout.dialog_account_list_selection_layout);
+
+        AdapterItemClickListener mItemClickListener = new AdapterItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                CoinTokenAccount account = AccountUtil.getCoinTokenAccounts().get(position);
+                Log.i(TAG, account.mAccountName);
+
+                mType = account.mCoinType;
+
+                ImageView imageviewLogo = findViewById(R.id.imageView_account_coinlogo);
+                imageviewLogo.setImageResource(AccountUtil.getCoinLogo(account.mCoinType));
+
+                TextView textviewName = findViewById(R.id.textView_account_name);
+                textviewName.setText(account.mAccountName);
+
+                TextView textviewBalance = findViewById(R.id.textView_account_balance);
+                textviewBalance.setText(String.format("%.2f", mTokenBalance.mFormattedBalance) + " " + mToken);
+
+                TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
+                textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
+
+                ImageView payinputLogo = findViewById(R.id.imageView_paymentinput_coinlogo);
+                payinputLogo.setImageResource(AccountUtil.getCoinLogo(account.mCoinType));
+
+                TextView textviewPaymentType = findViewById(R.id.textView_paymentinput_coinname);
+                textviewPaymentType.setText(account.mCoinType);
+
+                mAccountSelDialog.dismiss();
+
+            }
+        };
+
+        RecyclerView recyclerView = mAccountSelDialog.findViewById(R.id.recyclerView_accountsel_dialog);
+        CoinAccountListAdapter adapterRe = new CoinAccountListAdapter(PaymentDetailsActivity.this, AccountUtil.getCoinTokenAccounts(), mItemClickListener);
+        recyclerView.setAdapter(adapterRe);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+
+        mAccountSelDialog.show();
+
+    }
 
     //Callback for SecuXPaymentManager
     private SecuXPaymentManagerCallback mPaymentMgrCallback = new SecuXPaymentManagerCallback() {

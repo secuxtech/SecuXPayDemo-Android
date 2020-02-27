@@ -10,9 +10,9 @@
 
     <EditText
         android:id="@+id/editText_register_email"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_width="300sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="50sp"
         android:ems="10"
 
         android:hint="Email"
@@ -21,11 +21,25 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/textView_register_invalid_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="invisible"
+        android:text="Invalid email"
+        android:textSize="13sp"
+        android:textColor="#FF0000"
+
+        android:layout_marginLeft="2sp"
+        app:layout_constraintTop_toBottomOf="@id/editText_register_email"
+        app:layout_constraintLeft_toLeftOf="@id/editText_register_email" />
+
     <EditText
         android:id="@+id/editText_register_phone"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="30dp"
+        android:layout_width="300sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="30sp"
         android:ems="10"
 
         android:hint="Phone"
@@ -34,11 +48,25 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_email" />
 
+    <TextView
+        android:id="@+id/textView_register_invalid_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="invisible"
+        android:text="Invalid phone number"
+        android:textSize="13sp"
+        android:textColor="#FF0000"
+
+        android:layout_marginLeft="2sp"
+        app:layout_constraintTop_toBottomOf="@id/editText_register_phone"
+        app:layout_constraintLeft_toLeftOf="@id/editText_register_phone" />
+
     <EditText
         android:id="@+id/editText_register_password"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="30dp"
+        android:layout_width="300sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="30sp"
         android:ems="10"
 
         android:hint="Password"
@@ -47,11 +75,25 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_phone" />
 
+    <TextView
+        android:id="@+id/textView_register_invalid_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="invisible"
+        android:text="Invalid password"
+        android:textSize="13sp"
+        android:textColor="#FF0000"
+
+        android:layout_marginLeft="2sp"
+        app:layout_constraintTop_toBottomOf="@id/editText_register_password"
+        app:layout_constraintLeft_toLeftOf="@id/editText_register_password" />
+
     <EditText
         android:id="@+id/editText_register_confirmpassword"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="30dp"
+        android:layout_width="300sp"
+        android:layout_height="50sp"
+        android:layout_marginTop="30sp"
         android:ems="10"
 
         android:hint="Confirm password"
@@ -59,6 +101,20 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_password" />
+
+    <TextView
+        android:id="@+id/textView_register_invalid_confirmpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="invisible"
+        android:text="Invalid password"
+        android:textSize="13sp"
+        android:textColor="#FF0000"
+
+        android:layout_marginLeft="2sp"
+        app:layout_constraintTop_toBottomOf="@id/editText_register_confirmpassword"
+        app:layout_constraintLeft_toLeftOf="@id/editText_register_confirmpassword" />
 
     <!--
     <TextView
@@ -79,14 +135,15 @@
         -->
 
     <Button
-        android:layout_width="300dp"
-        android:layout_height="45dp"
+        android:id="@+id/button_register"
+        android:layout_width="300sp"
+        android:layout_height="45sp"
         android:background="@drawable/ripple_effect"
 
         android:onClick="onReigsterButtonClick"
         android:text="Register"
 
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="50sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_confirmpassword"/>

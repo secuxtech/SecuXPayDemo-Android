@@ -39,7 +39,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentHistoryActivity" />
         </activity>
-        <activity android:name=".Activity.TokenTransHistoryActivity" />
+        <activity android:name=".Activity.TokenTransHistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity" />
+        </activity>
         <activity android:name=".Activity.CoinAccountListActivity" />
         <activity android:name=".Activity.RegistryActivity" />
         <activity android:name=".Activity.LoginActivity">

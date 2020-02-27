@@ -222,13 +222,23 @@ public class PaymentMainActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final String amount, coinType, token, devID;
-
+                String amount = "0", coinType = "DCT", token = "SPC", devID;
+                final boolean showAccountSelection;
                 try{
-                    amount = payinfoJson.getString("amount");
-                    coinType = payinfoJson.getString("coinType");
-                    String devid = payinfoJson.getString("deviceID");
-                    token = payinfoJson.getString("token");
+                    if (payinfoJson.has("amount")) {
+                        amount = payinfoJson.getString("amount");
+                    }
+
+                    if (payinfoJson.has("coinType")) {
+                        coinType = payinfoJson.getString("coinType");
+                        showAccountSelection = false;
+                    }else{
+                        showAccountSelection = true;
+                    }
+
+                    if (payinfoJson.has("token")) {
+                        token = payinfoJson.getString("token");
+                    }
                     devID = payinfoJson.getString("deviceID");
 
                     SecuXCoinAccount coinAcc = Setting.getInstance().mAccount.getCoinAccount(coinType);
@@ -267,19 +277,23 @@ public class PaymentMainActivity extends BaseActivity {
                 }
 
                 try {
-                    final JSONObject decryptedPayInfo = new JSONObject(ret.second);
-                    final String decryptedDevID = decryptedPayInfo.getString("deviceID");
+                    final JSONObject replyInfo = new JSONObject(ret.second);
+                    final String replyDevID = replyInfo.getString("deviceID");
+                    final String replyAmount = replyInfo.getString("amount");
+                    final String replyToken = replyInfo.getString("symbol");
+                    final String replyCoinType = replyInfo.getString("coinType");
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             //Toast.makeText(getApplicationContext(),"Scan result: "+scanContent, Toast.LENGTH_LONG).show();
                             Intent newIntent = new Intent(mContext, PaymentDetailsActivity.class);
-                            newIntent.putExtra(PAYMENT_INFO, decryptedPayInfo.toString());
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, amount);
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, coinType);
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_TOKEN, token);
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_DEVID, decryptedDevID);
+                            newIntent.putExtra(PAYMENT_INFO, replyInfo.toString());
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, replyAmount);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, replyCoinType);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_TOKEN, replyToken);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_DEVID, replyDevID);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_SHOWACCOUNTSEL, showAccountSelection);
                             startActivity(newIntent);
                         }
                     });

@@ -19,6 +19,7 @@ import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
 import com.secuxtech.mysecuxpay.Model.CoinTokenAccount;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.AccountUtil;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
 import com.secuxtech.paymentkit.SecuXCoinAccount;
@@ -40,10 +41,13 @@ public class CoinAccountListActivity extends BaseActivity {
             CoinTokenAccount account = mTokenAccountArray.get(position);
             Log.i(TAG, account.mAccountName + " " + account.mCoinType + " " + account.mToken);
 
+            /*
             Intent newIntent = new Intent(mContext, TokenTransHistoryActivity.class);
             newIntent.putExtra(TokenTransHistoryActivity.TRANSACTION_HISTORY_COINTYPE, account.mCoinType);
             newIntent.putExtra(TokenTransHistoryActivity.TRANSACTION_HISTORY_TOKEN, account.mToken);
             startActivity(newIntent);
+
+             */
         }
     };
 
@@ -69,16 +73,7 @@ public class CoinAccountListActivity extends BaseActivity {
             public void run() {
                 mAccountManager.getAccountBalance(Setting.getInstance().mAccount);
 
-                for(int i=0; i< Setting.getInstance().mAccount.mCoinAccountArr.size(); i++){
-                    SecuXCoinAccount coinAccount = Setting.getInstance().mAccount.mCoinAccountArr.get(i);
-
-                    Set<Map.Entry<String, SecuXCoinTokenBalance>> entrySet = coinAccount.mTokenBalanceMap.entrySet();
-                    for (Map.Entry<String, SecuXCoinTokenBalance> entry: entrySet){
-                        String token = entry.getKey();
-                        CoinTokenAccount tokenAccount = new CoinTokenAccount(coinAccount, token);
-                        mTokenAccountArray.add(tokenAccount);
-                    }
-                }
+                mTokenAccountArray = AccountUtil.getCoinTokenAccounts();
 
                 CommonProgressDialog.dismiss();
 

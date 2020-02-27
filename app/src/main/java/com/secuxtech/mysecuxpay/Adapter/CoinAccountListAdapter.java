@@ -70,7 +70,7 @@ public class CoinAccountListAdapter extends RecyclerView.Adapter<CoinAccountList
             textviewBalance = itemView.findViewById(R.id.textView_account_balance);
             imageviewCoinLogo = itemView.findViewById(R.id.imageView_account_coinlogo);
 
-            /*
+
             CardView cardView = itemView.findViewById(R.id.cardView_account);
 
             cardView.setOnClickListener(new View.OnClickListener(){
@@ -82,7 +82,7 @@ public class CoinAccountListAdapter extends RecyclerView.Adapter<CoinAccountList
                 }
             });
 
-             */
+
 
         }
 
