@@ -130,6 +130,7 @@ public class LoginActivity extends BaseActivity {
                         if (ret.first== SecuXServerRequestHandler.SecuXRequestOK) {
                             Intent newIntent = new Intent(mContext, CoinAccountListActivity.class);
                             startActivity(newIntent);
+
                         }else{
                             showMessageInMain("Login failed! Error: " + ret.second);
                         }
