@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
@@ -68,10 +69,19 @@ public class RegistryActivity extends BaseActivity {
 
                 SecuXUserAccount account = new SecuXUserAccount(email, phone, password);
                 Pair<Integer, String> ret = mAccountManager.registerUserAccount(account);
-                CommonProgressDialog.dismiss();
+
                 if (ret.first== SecuXServerRequestHandler.SecuXRequestOK) {
-                    Intent newIntent = new Intent(mContext, MainActivity.class);
-                    startActivity(newIntent);
+
+                    ret = mAccountManager.loginUserAccount(Setting.getInstance().mAccount);
+                    if (ret.first == SecuXServerRequestHandler.SecuXRequestOK){
+                        Intent newIntent = new Intent(mContext, MainActivity.class);
+                        startActivity(newIntent);
+                    }else{
+                        showMessageInMain("Login the account failed! Error: " + ret.second);
+                    }
+
+                    CommonProgressDialog.dismiss();
+
                 }else {
                     showMessageInMain("registration failed! Error: " + ret.second);
                 }
