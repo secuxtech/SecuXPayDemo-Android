@@ -269,8 +269,8 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         CommonProgressDialog.showProgressDialog(mContext);
 
-        //Use SecuXManager to do payment, must call in main thread
         mPaymentManager.doPayment(mContext, Setting.getInstance().mAccount, mStoreName, mPaymentInfo);
+
     }
 
     public void onClickAccount(View v){
@@ -441,9 +441,15 @@ public class PaymentDetailsActivity extends BaseActivity {
                         Button buttonPay = findViewById(R.id.button_pay);
                         buttonPay.setEnabled(true);
                     }else{
+                        ImageView imgviewStoreLogo = findViewById(R.id.imageView_storelogo);
+                        imgviewStoreLogo.setVisibility(View.VISIBLE);
+
+                        imgviewStoreLogo.setImageResource(R.drawable.storename_unavailable);
+
                         Toast toast = Toast.makeText(mContext, "Get store info. failed!", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER,0,0);
                         toast.show();
+
                     }
                 }
             });
