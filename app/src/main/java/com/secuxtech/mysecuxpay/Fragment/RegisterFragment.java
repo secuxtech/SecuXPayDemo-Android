@@ -186,23 +186,42 @@ public class RegisterFragment extends Fragment {
             @Override
             public void run() {
                 final Pair<Integer, String> ret = mAccountManager.registerUserAccount(account);
+                if (ret.first == SecuXServerRequestHandler.SecuXRequestOK) {
 
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        CommonProgressDialog.dismiss();
-                        if (ret.first== SecuXServerRequestHandler.SecuXRequestOK) {
-                            Setting.getInstance().mAccount = account;
-                            Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
-                            startActivity(newIntent);
-                        }else{
+                    account.mCoinAccountArr.clear();
+                    final Pair<Integer, String> loginRet = mAccountManager.loginUserAccount(account);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CommonProgressDialog.dismiss();
+                            if (loginRet.first == SecuXServerRequestHandler.SecuXRequestOK) {
+
+                                //Pair<Integer, String> loginRet = mAccountManager.loginUserAccount(account);
+
+                                Setting.getInstance().mAccount = account;
+                                Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
+                                startActivity(newIntent);
+                            } else {
+                                Toast toast = Toast.makeText(getActivity(), "Login failed! Error: " + loginRet.second, Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
+                            }
+
+                        }
+                    });
+
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CommonProgressDialog.dismiss();
                             Toast toast = Toast.makeText(getActivity(), "Register failed! Error: " + ret.second, Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER,0,0);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                         }
-                    }
-                });
+                    });
 
+                }
             }
         }).start();
 
