@@ -44,6 +44,8 @@ public class PaymentMainActivity extends BaseActivity {
     private NfcAdapter mNfcAdapter;
     private PendingIntent mPendingIntent = null;
 
+    SecuXPaymentManager mPaymentManager = new SecuXPaymentManager();
+
     public static final String PAYMENT_INFO = "com.secux.MySecuXPay.PAYMENTINFO";
 
     @Override
@@ -169,27 +171,14 @@ public class PaymentMainActivity extends BaseActivity {
                 String text = new String(payload, languageCodeLength + 1,
                         payload.length - languageCodeLength - 1, textEncoding);
 
-                if (text.contains("Amount:")){
-                    amount = text.substring(text.indexOf(':')+1);
-                }else if (text.contains("DevID:")){
-                    devid = text.substring(text.indexOf(':')+1);
-                }else if (text.contains("CoinType:")){
-                    cointype = text.substring(text.indexOf(':')+1);
-                }else if (text.contains("Token:")){
-                    token = text.substring(text.indexOf(':')+1);
-                }
+                //{"amount":"11.5", "coinType":"DCT", "token":"SPC","deviceIDhash":"04793D374185C2167A420D250FFF93F05156350C"}
 
                 Log.i(TAG, text);
-            }
 
-            if (amount.length()>0 && devid.length()>0 && cointype.length()>0){
-                JSONObject payinfoJson = new JSONObject();
-                payinfoJson.put("amount", amount);
-                payinfoJson.put("deviceID", devid);
-                payinfoJson.put("coinType", cointype);
-                payinfoJson.put("token", token);
-
-                handlePaymentInfoJson(payinfoJson);
+                if (text.contains("{") && text.contains("}")) {
+                    handlePaymentInfo(text);
+                    return;
+                }
             }
 
         } catch (Exception e) {
@@ -201,6 +190,7 @@ public class PaymentMainActivity extends BaseActivity {
                 Log.e(TAG, "close ndef failed! " + e.getLocalizedMessage());
             }
         }
+
     }
 
     public void onScanQRCodeButtonClick(View v)
@@ -217,47 +207,13 @@ public class PaymentMainActivity extends BaseActivity {
         startActivity(newIntent);
     }
 
-    public void handlePaymentInfoJson(final JSONObject payinfoJson){
+    public void handlePaymentInfo(final String payinfo){
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String amount = "0", coinType = "DCT", token = "SPC", devID;
-                final boolean showAccountSelection;
-                try{
-                    if (payinfoJson.has("amount")) {
-                        amount = payinfoJson.getString("amount");
-                    }
 
-                    if (payinfoJson.has("coinType")) {
-                        coinType = payinfoJson.getString("coinType");
-                        showAccountSelection = false;
-                    }else{
-                        showAccountSelection = true;
-                    }
-
-                    if (payinfoJson.has("token")) {
-                        token = payinfoJson.getString("token");
-                    }
-                    devID = payinfoJson.getString("deviceID");
-
-                    SecuXCoinAccount coinAcc = Setting.getInstance().mAccount.getCoinAccount(coinType);
-
-                    if (coinAcc == null){
-                        showMessageInMain("Unsupported Coin Type!");
-                        return;
-                    }else if (coinAcc.getBalance(token)==null){
-                        showMessageInMain("Unsupported Token Type!");
-                        return;
-                    }
-
-                }catch (Exception e){
-                    showMessageInMain("Invalid QRCode!");
-                    return;
-                }
-
-                SecuXPaymentManager paymentMgr = new SecuXPaymentManager();
-                Pair<Integer, String> ret = paymentMgr.getDeviceInfo(coinType, token, amount, devID);
+                Pair<Integer, String> ret = mPaymentManager.getDeviceInfo(payinfo);
                 if (ret.first== SecuXServerRequestHandler.SecuXRequestUnauthorized){
                     showMessageInMain("Login timeout! Please login again!");
 
@@ -272,27 +228,59 @@ public class PaymentMainActivity extends BaseActivity {
                     return;
 
                 }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
-                    showMessageInMain("Invalid deviceID!");
+                    showMessageInMain("Invalid payment information!");
                     return;
                 }
 
-                try {
-                    final JSONObject replyInfo = new JSONObject(ret.second);
-                    final String replyDevID = replyInfo.getString("deviceID");
-                    final String replyAmount = replyInfo.getString("amount");
-                    final String replyToken = replyInfo.getString("symbol");
-                    final String replyCoinType = replyInfo.getString("coinType");
+                try{
+                    String amount = "0", coinType = "DCT", token = "SPC";
+                    final String payInfoReply = ret.second;
+                    final boolean showAccountSelection;
+
+                    JSONObject payinfoJson = new JSONObject(payInfoReply);
+                    if (payinfoJson.has("amount")) {
+                        amount = payinfoJson.getString("amount");
+                    }
+
+                    if (payinfoJson.has("coinType")) {
+                        coinType = payinfoJson.getString("coinType");
+                        showAccountSelection = false;
+                    }else{
+                        showAccountSelection = true;
+                    }
+
+                    if (payinfoJson.has("token")) {
+                        token = payinfoJson.getString("token");
+                    }
+
+                    final String devID = payinfoJson.getString("deviceID");
+                    final String devIDHash = payinfoJson.getString("deviceIDhash");
+
+                    SecuXCoinAccount coinAcc = Setting.getInstance().mAccount.getCoinAccount(coinType);
+
+                    if (coinAcc == null){
+                        showMessageInMain("Unsupported Coin Type!");
+                        return;
+                    }else if (coinAcc.getBalance(token)==null){
+                        showMessageInMain("Unsupported Token Type!");
+                        return;
+                    }
+
+                    final String payAmount = amount;
+                    final String payCoinType = coinType;
+                    final String payToken = token;
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             //Toast.makeText(getApplicationContext(),"Scan result: "+scanContent, Toast.LENGTH_LONG).show();
                             Intent newIntent = new Intent(mContext, PaymentDetailsActivity.class);
-                            newIntent.putExtra(PAYMENT_INFO, replyInfo.toString());
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, replyAmount);
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, replyCoinType);
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_TOKEN, replyToken);
-                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_DEVID, replyDevID);
+                            newIntent.putExtra(PAYMENT_INFO, payInfoReply);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_AMOUNT, payAmount);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_COINTYPE, payCoinType);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_TOKEN, payToken);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_DEVID, devID);
+                            newIntent.putExtra(PaymentDetailsActivity.PAYMENT_DEVIDHASH, devIDHash);
                             newIntent.putExtra(PaymentDetailsActivity.PAYMENT_SHOWACCOUNTSEL, showAccountSelection);
                             startActivity(newIntent);
                         }
@@ -318,14 +306,8 @@ public class PaymentMainActivity extends BaseActivity {
             final String scanContent = scanningResult.getContents();
             if (scanContent.length() > 0)
             {
-                try{
-                    JSONObject payinfoJson = new JSONObject(scanContent);
-                    handlePaymentInfoJson(payinfoJson);
-
-                    return;
-                }catch (Exception e) {
-                    Log.e(TAG, "Scan QRCode error "+e.getLocalizedMessage());
-                }
+                handlePaymentInfo(scanContent);
+                return;
             }
 
 

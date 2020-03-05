@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -72,10 +73,10 @@ public class PaymentDetailsActivity extends BaseActivity {
     public static final String PAYMENT_COINTYPE = "com.secux.MySecuXPay.COINTYPE";
     public static final String PAYMENT_TOKEN = "com.secux.MySecuXPay.TOKEN";
     public static final String PAYMENT_DEVID = "com.secux.MySecuXPay.DEVID";
+    public static final String PAYMENT_DEVIDHASH = "com.secux.MySecuXPay.DEVIDHASH";
     public static final String PAYMENT_STORENAME = "com.secux.MySecuXPay.STORENAME";
     public static final String PAYMENT_DATE = "com.secux.MySecuXPay.DATE";
     public static final String PAYMENT_SHOWACCOUNTSEL = "com.secux.MySecuXPay.SHOWACCOUNTSEL";
-
 
     private Context mContext = this;
     private ProgressBar mProgressBar;
@@ -88,6 +89,7 @@ public class PaymentDetailsActivity extends BaseActivity {
     private String mType = "";
     private String mToken = "";
     private String mDevID = "";
+    private String mDevIDhash = "";
 
     private SecuXCoinAccount mCoinAccount = null;
     private SecuXCoinTokenBalance mTokenBalance = null;
@@ -108,6 +110,7 @@ public class PaymentDetailsActivity extends BaseActivity {
         mType = intent.getStringExtra(PAYMENT_COINTYPE);
         mToken = intent.getStringExtra(PAYMENT_TOKEN);
         mDevID = intent.getStringExtra(PAYMENT_DEVID);
+        mDevIDhash = intent.getStringExtra(PAYMENT_DEVIDHASH);
         mShowAccountSel = intent.getBooleanExtra(PAYMENT_SHOWACCOUNTSEL, false);
 
         mCoinAccount = Setting.getInstance().mAccount.getCoinAccount(mType);
@@ -176,7 +179,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                 mPaymentManager.setSecuXPaymentManagerCallback(mPaymentMgrCallback);
 
                 //Use SecuXPaymentManager to get store info.
-                mPaymentManager.getStoreInfo(mDevID);
+                mPaymentManager.getStoreInfo(mDevIDhash);
 
             }
         }).start();
@@ -408,7 +411,7 @@ public class PaymentDetailsActivity extends BaseActivity {
         //Called when payment status is changed. Payment status are: "Device connecting...", "DCT transferring..." and "Device verifying..."
         @Override
         public void updatePaymentStatus(final String status){
-            Log.i("secux-paymentkit-exp", "Update payment status: " + status);
+            Log.i("secux-paymentkit-exp", "Update payment status:" + SystemClock.uptimeMillis() + " " + status);
 
             runOnUiThread(new Runnable() {
                 @Override
