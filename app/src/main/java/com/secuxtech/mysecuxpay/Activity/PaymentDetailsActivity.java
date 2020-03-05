@@ -41,6 +41,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.an.biometric.BiometricCallback;
+import com.an.biometric.BiometricManager;
 import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
 import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
 import com.secuxtech.mysecuxpay.Model.CoinTokenAccount;
@@ -273,9 +275,21 @@ public class PaymentDetailsActivity extends BaseActivity {
         }, 10000);
         */
 
+        mAmount = strAmount;
+
+        new BiometricManager.BiometricBuilder(this)
+                .setTitle("Pay to " + mStoreName)
+                .setSubtitle("MySecuXPay")
+                .setDescription("Allow payment with your biometric ID")
+                .setNegativeButtonText("Cancel")
+                .build()
+                .authenticate(mBiometricCallback);
+
+    }
+
+    private void doPayment(){
         CommonProgressDialog.showProgressDialog(mContext);
 
-        mAmount = strAmount;
         try {
             JSONObject payInfoJson = new JSONObject();
             payInfoJson.put("amount", mAmount);
@@ -291,8 +305,59 @@ public class PaymentDetailsActivity extends BaseActivity {
             toast.show();
             return;
         }
-
     }
+
+    private BiometricCallback mBiometricCallback = new BiometricCallback() {
+        @Override
+        public void onSdkVersionNotSupported() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationNotSupported() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationNotAvailable() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationPermissionNotGranted() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationInternalError(String error) {
+
+        }
+
+        @Override
+        public void onAuthenticationFailed() {
+
+        }
+
+        @Override
+        public void onAuthenticationCancelled() {
+
+        }
+
+        @Override
+        public void onAuthenticationSuccessful() {
+            doPayment();
+        }
+
+        @Override
+        public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
+
+        }
+
+        @Override
+        public void onAuthenticationError(int errorCode, CharSequence errString) {
+
+        }
+    };
 
     public void onClickAccount(View v){
         if (!mShowAccountSel){

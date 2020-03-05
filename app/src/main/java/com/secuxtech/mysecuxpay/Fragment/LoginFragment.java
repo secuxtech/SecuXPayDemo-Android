@@ -1,8 +1,12 @@
 package com.secuxtech.mysecuxpay.Fragment;
 
 
-import android.app.Activity;
+import android.annotation.TargetApi;
+
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.biometrics.BiometricPrompt;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.util.Pair;
@@ -15,12 +19,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.an.biometric.BiometricCallback;
+import com.an.biometric.BiometricManager;
 import com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity;
 import com.secuxtech.mysecuxpay.Activity.MainActivity;
 import com.secuxtech.mysecuxpay.Model.Setting;
@@ -31,7 +37,6 @@ import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
-import static androidx.core.content.ContextCompat.getSystemService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,6 +80,21 @@ public class LoginFragment extends Fragment {
                 onLoginButtonClick(v);
             }
         });
+
+        if (Setting.getInstance().mAccount!=null){
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    new BiometricManager.BiometricBuilder(getActivity())
+                            .setTitle("Login")
+                            .setSubtitle("MySecuXPay")
+                            .setDescription("Auto login with your biometric ID")
+                            .setNegativeButtonText("Cancel")
+                            .build()
+                            .authenticate(mBiometricCallback);
+                }
+            });
+        }
 
         return view;
     }
@@ -131,7 +151,57 @@ public class LoginFragment extends Fragment {
 
     }
 
+    private BiometricCallback mBiometricCallback = new BiometricCallback() {
+        @Override
+        public void onSdkVersionNotSupported() {
 
+        }
+
+        @Override
+        public void onBiometricAuthenticationNotSupported() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationNotAvailable() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationPermissionNotGranted() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationInternalError(String error) {
+
+        }
+
+        @Override
+        public void onAuthenticationFailed() {
+
+        }
+
+        @Override
+        public void onAuthenticationCancelled() {
+
+        }
+
+        @Override
+        public void onAuthenticationSuccessful() {
+
+        }
+
+        @Override
+        public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
+
+        }
+
+        @Override
+        public void onAuthenticationError(int errorCode, CharSequence errString) {
+
+        }
+    };
 
     public void onLoginButtonClick(View v)
     {
@@ -183,5 +253,7 @@ public class LoginFragment extends Fragment {
 
 
     }
+
+
 
 }
