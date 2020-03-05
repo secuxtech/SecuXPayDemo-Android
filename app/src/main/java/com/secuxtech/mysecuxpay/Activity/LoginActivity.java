@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+import com.an.biometric.BiometricCallback;
+import com.an.biometric.BiometricManager;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
@@ -43,6 +45,21 @@ public class LoginActivity extends BaseActivity {
         mEdittextPwd.setOnFocusChangeListener(mViewFocusChangeListener);
         mEdittextPwd.setOnEditorActionListener(mTextviewEditorListener);
         mEdittextPwd.addTextChangedListener(mTextWatcher);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if (Setting.getInstance().mAccount!=null){
+            new BiometricManager.BiometricBuilder(this)
+                    .setTitle("Login")
+                    .setSubtitle("MySecuXPay")
+                    .setDescription("Auto login with your biometric ID")
+                    .setNegativeButtonText("Cancel")
+                    .build()
+                    .authenticate(mBiometricCallback);
+        }
     }
 
     private View.OnFocusChangeListener mViewFocusChangeListener = new View.OnFocusChangeListener(){
@@ -93,18 +110,60 @@ public class LoginActivity extends BaseActivity {
         }
     };
 
-    private void validateEmail(){
 
-    }
+    private BiometricCallback mBiometricCallback = new BiometricCallback() {
+        @Override
+        public void onSdkVersionNotSupported() {
 
-    private void validatePassword(){
+        }
 
-    }
+        @Override
+        public void onBiometricAuthenticationNotSupported() {
 
-    public void onSignupButtonClick(View v){
-        Intent newIntent = new Intent(mContext, RegistryActivity.class);
-        startActivity(newIntent);
-    }
+        }
+
+        @Override
+        public void onBiometricAuthenticationNotAvailable() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationPermissionNotGranted() {
+
+        }
+
+        @Override
+        public void onBiometricAuthenticationInternalError(String error) {
+
+        }
+
+        @Override
+        public void onAuthenticationFailed() {
+
+        }
+
+        @Override
+        public void onAuthenticationCancelled() {
+
+        }
+
+        @Override
+        public void onAuthenticationSuccessful() {
+            mEdittextEmail.setText(Setting.getInstance().mAccount.mAccountName);
+            mEdittextPwd.setText(Setting.getInstance().mAccount.mPassword);
+            onLoginButtonClick(null);
+        }
+
+        @Override
+        public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
+
+        }
+
+        @Override
+        public void onAuthenticationError(int errorCode, CharSequence errString) {
+
+        }
+    };
 
     public void onLoginButtonClick(View v)
     {
