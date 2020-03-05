@@ -184,6 +184,17 @@ public class PaymentHistoryActivity extends BaseActivity {
 
         }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
             showMessageInMain("Get payment history failed! Error: " + ret.second);
+
+            if (ret.second.contains("no token")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent newIntent = new Intent(mContext, LoginActivity.class);
+                        startActivity(newIntent);
+                    }
+                });
+            }
+
             return false;
         }
 

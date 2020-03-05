@@ -229,6 +229,17 @@ public class PaymentMainActivity extends BaseActivity {
 
                 }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
                     showMessageInMain("Invalid payment information!");
+
+                    if (ret.second.contains("no token")){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent newIntent = new Intent(mContext, LoginActivity.class);
+                                startActivity(newIntent);
+                            }
+                        });
+                    }
+
                     return;
                 }
 

@@ -69,6 +69,18 @@ public class TokenTransHistoryActivity extends BaseActivity {
                 Pair<Integer, String> ret = mAccountManager.getTransferHistory(Setting.getInstance().mAccount, mCoinType, mToken, 1, 20, mTransHistoryArray);
                 if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
                     showMessageInMain("Get payment history failed! Error: " + ret.second);
+
+                    if (ret.second.contains("no token") || ret.first == SecuXServerRequestHandler.SecuXRequestUnauthorized){
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent newIntent = new Intent(mContext, LoginActivity.class);
+                                startActivity(newIntent);
+                            }
+                        });
+                        return;
+                    }
                 }
 
                 runOnUiThread(new Runnable() {
