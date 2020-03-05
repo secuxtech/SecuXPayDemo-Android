@@ -56,6 +56,8 @@ import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
+import org.json.JSONObject;
+
 import java.security.Signature;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,6 +86,7 @@ public class PaymentDetailsActivity extends BaseActivity {
     private SecuXPaymentManager mPaymentManager = new SecuXPaymentManager();
 
     private String mPaymentInfo = ""; //"{\"amount\":\"11\", \"coinType\":\"DCT\", \"deviceID\":\"4ab10000726b\"}";
+    private String mStoreInfo = "";
     private String mStoreName = "";
     private String mAmount = "";
     private String mType = "";
@@ -272,7 +275,22 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         CommonProgressDialog.showProgressDialog(mContext);
 
-        mPaymentManager.doPayment(mContext, Setting.getInstance().mAccount, mStoreName, mPaymentInfo);
+        mAmount = strAmount;
+        try {
+            JSONObject payInfoJson = new JSONObject();
+            payInfoJson.put("amount", mAmount);
+            payInfoJson.put("coinType", mType);
+            payInfoJson.put("token", mToken);
+            payInfoJson.put("deviceID", mDevID);
+            mPaymentInfo = payInfoJson.toString();
+            mPaymentManager.doPayment(mContext, Setting.getInstance().mAccount, mStoreInfo, mPaymentInfo);
+        }catch (Exception e){
+
+            Toast toast = Toast.makeText(mContext, "Generate payment data failed!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.BOTTOM,0,200);
+            toast.show();
+            return;
+        }
 
     }
 
@@ -298,6 +316,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                 Log.i(TAG, account.mAccountName);
 
                 mType = account.mCoinType;
+                mToken = account.mToken;
 
                 ImageView imageviewLogo = findViewById(R.id.imageView_account_coinlogo);
                 imageviewLogo.setImageResource(AccountUtil.getCoinLogo(account.mCoinType));
@@ -423,8 +442,8 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         //Called when get store information is completed. Returns store name and store logo.
         @Override
-        public void getStoreInfoDone(final boolean ret, final String storeName, final Bitmap storeLogo){
-            Log.i("secux-paymentkit-exp", "Get store info. done ret=" + String.valueOf(ret) + ",name=" + storeName);
+        public void getStoreInfoDone(final boolean ret, final String storeInfo, final Bitmap storeLogo){
+            Log.i("secux-paymentkit-exp", "Get store info. done ret=" + String.valueOf(ret) + ",name=" + storeInfo);
             runOnUiThread(new Runnable() {
 
                 @Override
@@ -432,7 +451,15 @@ public class PaymentDetailsActivity extends BaseActivity {
 
                     mProgressBar.setVisibility(View.INVISIBLE);
                     if (ret){
-                        mStoreName = storeName;
+                        mStoreInfo = storeInfo;
+
+                        mStoreName = "";
+                        try{
+                            JSONObject storeInfoJson = new JSONObject(mStoreInfo);
+                            mStoreName = storeInfoJson.getString("name");
+                        }catch (Exception e){
+                        }
+
                         TextView textviewStoreName = findViewById(R.id.textView_storename);
                         textviewStoreName.setText(mStoreName);
 

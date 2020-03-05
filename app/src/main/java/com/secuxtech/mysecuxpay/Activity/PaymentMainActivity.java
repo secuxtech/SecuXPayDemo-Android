@@ -249,18 +249,18 @@ public class PaymentMainActivity extends BaseActivity {
                     final boolean showAccountSelection;
 
                     JSONObject payinfoJson = new JSONObject(payInfoReply);
-                    if (payinfoJson.has("amount")) {
+                    if (payinfoJson.has("amount") && payinfoJson.getString("amount").compareTo("null")!=0) {
                         amount = payinfoJson.getString("amount");
                     }
 
-                    if (payinfoJson.has("coinType")) {
+                    if (payinfoJson.has("coinType") && payinfoJson.getString("coinType").compareTo("null")!=0) {
                         coinType = payinfoJson.getString("coinType");
                         showAccountSelection = false;
                     }else{
                         showAccountSelection = true;
                     }
 
-                    if (payinfoJson.has("token")) {
+                    if (payinfoJson.has("token") && payinfoJson.getString("token").compareTo("null")!=0) {
                         token = payinfoJson.getString("token");
                     }
 

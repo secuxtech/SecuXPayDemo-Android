@@ -58,7 +58,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
             holder.textviewAccount.setText("N/A");
         }
 
-        holder.textviewDate.setText(historyItem.mTransactionTime);
+        holder.textviewDate.setText(historyItem.mTransactionTime + " UTC");
         //holder.textviewUsdbalance.setText("$ " + 0);
         holder.textviewTransCode.setText(historyItem.mTransactionCode);
         holder.textviewBalance.setText(historyItem.mAmount.toString() + " " + historyItem.mToken);

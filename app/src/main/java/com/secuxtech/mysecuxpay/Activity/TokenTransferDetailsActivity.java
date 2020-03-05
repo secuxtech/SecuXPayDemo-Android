@@ -39,7 +39,7 @@ public class TokenTransferDetailsActivity extends BaseActivity {
             }
         });
 
-        detailWebView.loadUrl("https://explorer-testnet.decent.ch/#/transaction/b8f86e3fcd86907ecb8f0e22de0af78bb1922063"); //mDetailUrl);
+        detailWebView.loadUrl(mDetailUrl);
 
 
 
