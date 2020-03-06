@@ -12,8 +12,8 @@ MySecuXPay is an Android Demo APP, which uses the 'secux-paymentkit'.
 <img src="Screenshot/screenshot4.jpg" width="200">
 </p>
 <p float="center">
-<img src="Screenshot/screenshot5.jpg" width="200">
-<img src="Screenshot/screenshot6.jpg" width="200">
-<img src="Screenshot/screenshot7.jpg" width="200">
-<img src="Screenshot/screenshot8.jpg" width="200">
+<img src="Screenshot/Screenshot5.jpg" width="200">
+<img src="Screenshot/Screenshot6.jpg" width="200">
+<img src="Screenshot/Screenshot7.jpg" width="200">
+<img src="Screenshot/Screenshot8.jpg" width="200">
 </p>
