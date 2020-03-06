@@ -185,7 +185,7 @@ public class PaymentHistoryActivity extends BaseActivity {
         }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
             showMessageInMain("Get payment history failed! Error: " + ret.second);
 
-            if (ret.second.contains("no token")){
+            if (ret.second.contains("No token")){
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

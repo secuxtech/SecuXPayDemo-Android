@@ -230,7 +230,7 @@ public class PaymentMainActivity extends BaseActivity {
                 }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
                     showMessageInMain("Invalid payment information!");
 
-                    if (ret.second.contains("no token")){
+                    if (ret.second.contains("No token")){
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

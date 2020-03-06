@@ -1,6 +1,9 @@
 package com.secuxtech.mysecuxpay.Activity;
 
 import androidx.core.util.Pair;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 
 import com.an.biometric.BiometricCallback;
 import com.an.biometric.BiometricManager;
+import com.secuxtech.mysecuxpay.Fragment.LoginFragment;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
@@ -26,9 +30,11 @@ import com.secuxtech.paymentkit.SecuXUserAccount;
 
 public class LoginActivity extends BaseActivity {
 
-    private SecuXAccountManager mAccountManager = new SecuXAccountManager();
-    private EditText mEdittextEmail;
-    private EditText mEdittextPwd;
+    //private SecuXAccountManager mAccountManager = new SecuXAccountManager();
+    //private EditText mEdittextEmail;
+    //private EditText mEdittextPwd;
+
+    private Fragment mLoginFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,7 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        /*
         mEdittextEmail = findViewById(R.id.editText_lgoin_email);
         mEdittextEmail.setOnFocusChangeListener(mViewFocusChangeListener);
         mEdittextEmail.setOnEditorActionListener(mTextviewEditorListener);
@@ -45,8 +52,20 @@ public class LoginActivity extends BaseActivity {
         mEdittextPwd.setOnFocusChangeListener(mViewFocusChangeListener);
         mEdittextPwd.setOnEditorActionListener(mTextviewEditorListener);
         mEdittextPwd.addTextChangedListener(mTextWatcher);
+
+         */
+
+        FragmentManager fm = getSupportFragmentManager();
+        mLoginFragment = fm.findFragmentByTag("fragment_login");
+        if (mLoginFragment == null) {
+            FragmentTransaction ft = fm.beginTransaction();
+            mLoginFragment =new LoginFragment();
+            ft.add(android.R.id.content,mLoginFragment,"fragment_login");
+            ft.commit();
+        }
     }
 
+    /*
     @Override
     protected void onResume(){
         super.onResume();
@@ -201,4 +220,6 @@ public class LoginActivity extends BaseActivity {
 
 
     }
+
+     */
 }

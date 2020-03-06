@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -104,6 +105,8 @@ public class PaymentDetailsActivity extends BaseActivity {
     private Dialog mAccountSelDialog;
     private boolean mShowAccountSel = false;
 
+    private Button mButtonPay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,8 +143,8 @@ public class PaymentDetailsActivity extends BaseActivity {
         TextView textviewPaymentType = findViewById(R.id.textView_paymentinput_coinname);
         textviewPaymentType.setText(mToken);
 
-        Button buttonPay = findViewById(R.id.button_pay);
-        buttonPay.setEnabled(false);
+        mButtonPay = findViewById(R.id.button_pay);
+        mButtonPay.setEnabled(false);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar_load_storeinfo);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -277,13 +280,18 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         mAmount = strAmount;
 
-        new BiometricManager.BiometricBuilder(this)
-                .setTitle("Pay to " + mStoreName)
-                .setSubtitle("MySecuXPay")
-                .setDescription("Allow payment with your biometric ID")
-                .setNegativeButtonText("Cancel")
-                .build()
-                .authenticate(mBiometricCallback);
+        try{
+            new BiometricManager.BiometricBuilder(this)
+                    .setTitle("Pay to " + mStoreName)
+                    .setSubtitle("MySecuXPay")
+                    .setDescription("Allow payment with your biometric ID")
+                    .setNegativeButtonText("Cancel")
+                    .build()
+                    .authenticate(mBiometricCallback);
+        }catch (Exception e){
+            Log.i(TAG, e.getMessage());
+            doPayment();
+        }
 
     }
 
@@ -544,6 +552,8 @@ public class PaymentDetailsActivity extends BaseActivity {
                         Toast toast = Toast.makeText(mContext, "Get store info. failed!", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER,0,0);
                         toast.show();
+
+                        mButtonPay.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorButtonDisabled));
 
                     }
                 }

@@ -12,4 +12,5 @@
     <color name="colorPaymentSuccess">#51B924</color>
     <color name="colorPaymentFail">#FA7B7B</color>
     <color name="colorProgressRing">#EBCB56</color>
+    <color name="colorButtonDisabled">#8F8C8C</color>
 </resources>

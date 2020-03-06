@@ -70,7 +70,7 @@ public class TokenTransHistoryActivity extends BaseActivity {
                 if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
                     showMessageInMain("Get payment history failed! Error: " + ret.second);
 
-                    if (ret.second.contains("no token") || ret.first == SecuXServerRequestHandler.SecuXRequestUnauthorized){
+                    if (ret.second.contains("No token") || ret.first == SecuXServerRequestHandler.SecuXRequestUnauthorized){
 
                         runOnUiThread(new Runnable() {
                             @Override

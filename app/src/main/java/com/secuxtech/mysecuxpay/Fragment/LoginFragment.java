@@ -3,6 +3,7 @@ package com.secuxtech.mysecuxpay.Fragment;
 
 import android.annotation.TargetApi;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.biometrics.BiometricPrompt;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,7 +30,7 @@ import android.widget.Toast;
 import com.an.biometric.BiometricCallback;
 import com.an.biometric.BiometricManager;
 import com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity;
-import com.secuxtech.mysecuxpay.Activity.MainActivity;
+
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
@@ -48,6 +50,7 @@ public class LoginFragment extends Fragment {
     private EditText mEdittextPwd;
     private TextView mTextViewInvalidEmail;
     private TextView mTextViewInvalidPwd;
+    private Button mButtonLogin;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -72,6 +75,7 @@ public class LoginFragment extends Fragment {
 
         mTextViewInvalidEmail = view.findViewById(R.id.textView_login_invalid_email);
         mTextViewInvalidPwd = view.findViewById(R.id.textView_login_invalid_password);
+        mButtonLogin = view.findViewById(R.id.button_login);
 
         Button loginBtn = view.findViewById(R.id.button_login);
         loginBtn.setOnClickListener(new Button.OnClickListener() {
@@ -82,18 +86,22 @@ public class LoginFragment extends Fragment {
         });
 
         if (Setting.getInstance().mAccount!=null){
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    new BiometricManager.BiometricBuilder(getActivity())
-                            .setTitle("Login")
-                            .setSubtitle("MySecuXPay")
-                            .setDescription("Auto login with your biometric ID")
-                            .setNegativeButtonText("Cancel")
-                            .build()
-                            .authenticate(mBiometricCallback);
-                }
-            });
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new BiometricManager.BiometricBuilder(getActivity())
+                                .setTitle("Login")
+                                .setSubtitle("MySecuXPay")
+                                .setDescription("Auto login with your biometric ID")
+                                .setNegativeButtonText("Cancel")
+                                .build()
+                                .authenticate(mBiometricCallback);
+                    }
+                });
+            }catch (Exception e){
+
+            }
         }
 
         return view;
@@ -104,11 +112,16 @@ public class LoginFragment extends Fragment {
         public void onFocusChange(View v, boolean hasFocus) {
 
             if (!hasFocus) {
-                ((MainActivity)getActivity()).hideKeyboard(v);
+                hideKeyboard(v);
                 checkInput(v);
             }
         }
     };
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
     private TextView.OnEditorActionListener mTextviewEditorListener = new EditText.OnEditorActionListener(){
         @Override
@@ -189,7 +202,9 @@ public class LoginFragment extends Fragment {
 
         @Override
         public void onAuthenticationSuccessful() {
-
+            mEdittextEmail.setText(Setting.getInstance().mAccount.mAccountName);
+            mEdittextPwd.setText(Setting.getInstance().mAccount.mPassword);
+            onLoginButtonClick(mButtonLogin);
         }
 
         @Override
@@ -208,7 +223,7 @@ public class LoginFragment extends Fragment {
         //Intent newIntent = new Intent(mContext, MainActivity.class);
         //startActivity(newIntent);
 
-        ((MainActivity)getActivity()).hideKeyboard(v);
+        hideKeyboard(v);
 
         checkInput(mEdittextEmail);
         checkInput(mEdittextPwd);
