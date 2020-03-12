@@ -487,7 +487,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                     }
                     mediaPlayer.start();
 
-                    String amountStr = mAmount.toString() + " " + mType;
+                    String amountStr = mAmount.toString() + " " + mToken;
 
                     Intent newIntent = new Intent(mContext, PaymentResultActivity.class);
                     newIntent.putExtra(PAYMENT_RESULT, ret);
