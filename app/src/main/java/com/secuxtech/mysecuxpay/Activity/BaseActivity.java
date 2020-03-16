@@ -23,6 +23,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public static final String TAG = "MySecuXPay";
     protected boolean mShowBackButton = true;
+    protected boolean mShowLogo = true;
     protected Context mContext = this;
 
     @Override
@@ -38,14 +39,22 @@ public class BaseActivity extends AppCompatActivity {
         //getSupportActionBar().setTitle("Home");
         //getSupportActionBar().setSubtitle("sairam");
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true);
+
 
         LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflator.inflate(R.layout.layout_secux_logo_imageview, null);
 
-        actionBar.setTitle("");
-        actionBar.setCustomView(v);
+        ActionBar actionBar = getSupportActionBar();
+        if (mShowLogo) {
+
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setTitle("");
+            actionBar.setCustomView(v);
+        }else{
+            actionBar.setDisplayShowCustomEnabled(false);
+            actionBar.setTitle("");
+            actionBar.hide();
+        }
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 

@@ -168,7 +168,7 @@ public class PaymentHistoryActivity extends BaseActivity {
     }
 
     private boolean loadHistoryData(int pageIdx, int count, ArrayList<SecuXPaymentHistory> historyArr){
-        Pair<Integer, String> ret = mPaymentManager.getPaymentHistory(Setting.getInstance().mAccount, "SPC", pageIdx, count, historyArr);
+        Pair<Integer, String> ret = mPaymentManager.getPaymentHistory("SPC", pageIdx, count, historyArr);
         if (ret.first== SecuXServerRequestHandler.SecuXRequestUnauthorized){
             showMessageInMain("Login timeout! Please login again!");
 

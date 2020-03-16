@@ -97,15 +97,17 @@ public class CoinAccountListActivity extends BaseActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_main_accounts:
-
                     return true;
-                case R.id.navigation_main_payment:
 
+                case R.id.navigation_main_payment:
                     Intent newIntent = new Intent(mContext, PaymentMainActivity.class);
                     startActivity(newIntent);
-
                     return true;
 
+                case R.id.navigation_main_userinfo:
+                    Intent userInfoIntent = new Intent(mContext, UserInfoActivity.class);
+                    startActivity(userInfoIntent);
+                    return true;
             }
             return false;
         }

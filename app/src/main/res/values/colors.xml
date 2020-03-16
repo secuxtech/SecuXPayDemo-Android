@@ -13,4 +13,7 @@
     <color name="colorPaymentFail">#FA7B7B</color>
     <color name="colorProgressRing">#EBCB56</color>
     <color name="colorButtonDisabled">#8F8C8C</color>
+    <color name="colorAccountListBkg">#E9E9E9</color>
+    <color name="colorMainNavItemNormal">#A2A2A2</color>
+    <color name="colorMainNavItemSelect">#000000</color>
 </resources>

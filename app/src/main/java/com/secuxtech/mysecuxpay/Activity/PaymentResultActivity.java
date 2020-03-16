@@ -5,13 +5,18 @@ import androidx.core.content.ContextCompat;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,12 +26,15 @@ import java.util.Date;
 public class PaymentResultActivity extends BaseActivity {
 
     private Context mContext = this;
+    private boolean mPayResult = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_result);
 
         Boolean result = getIntent().getExtras().getBoolean(PaymentDetailsActivity.PAYMENT_RESULT);
+        mPayResult = result;
 
         ImageView imgviewRet = findViewById(R.id.imageView_result);
         int color = ContextCompat.getColor(this, R.color.colorPaymentFail);
@@ -36,6 +44,9 @@ public class PaymentResultActivity extends BaseActivity {
             color = ContextCompat.getColor(this, R.color.colorPaymentSuccess);
 
             imgviewRet.setImageResource(R.drawable.payment_success);
+
+            TextView textviewHis = findViewById(R.id.textView_history);
+            textviewHis.setText("Receipt");
         }else{
             imgviewRet.setImageResource(R.drawable.payment_failed);
         }
@@ -60,8 +71,20 @@ public class PaymentResultActivity extends BaseActivity {
         payRetInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent newIntent = new Intent(mContext, PaymentHistoryActivity.class);
-                startActivity(newIntent);
+
+                if (mPayResult) {
+                    if (Setting.getInstance().mLastPaymentHis != null){
+                        Intent receiptIntent = new Intent(mContext, ReceiptActivity.class);
+                        startActivity(receiptIntent);
+                    }else{
+                        Toast toast = Toast.makeText(mContext, "No last payment history information!", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER,0,0);
+                        toast.show();
+                    }
+                }else {
+                    Intent newIntent = new Intent(mContext, PaymentHistoryActivity.class);
+                    startActivity(newIntent);
+                }
             }
         });
 

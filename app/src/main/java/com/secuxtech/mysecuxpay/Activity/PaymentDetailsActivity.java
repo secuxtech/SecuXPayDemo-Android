@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,8 +56,11 @@ import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
 import com.secuxtech.paymentkit.SecuXCoinAccount;
 import com.secuxtech.paymentkit.SecuXCoinTokenBalance;
+import com.secuxtech.paymentkit.SecuXPaymentHistory;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
+import com.secuxtech.paymentkit.SecuXServerRequestHandler;
+import com.secuxtech.paymentkit.SecuXTransferResult;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
 import org.json.JSONObject;
@@ -82,6 +86,9 @@ public class PaymentDetailsActivity extends BaseActivity {
     public static final String PAYMENT_STORENAME = "com.secux.MySecuXPay.STORENAME";
     public static final String PAYMENT_DATE = "com.secux.MySecuXPay.DATE";
     public static final String PAYMENT_SHOWACCOUNTSEL = "com.secux.MySecuXPay.SHOWACCOUNTSEL";
+
+    public static final int REQUEST_PWD_PROMPT = 1;
+
 
     private Context mContext = this;
     private ProgressBar mProgressBar;
@@ -343,6 +350,12 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         @Override
         public void onAuthenticationFailed() {
+            KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
+            // get the intent to prompt the user
+            Intent intent = km.createConfirmDeviceCredentialIntent("MyEvPay", "Enter your password to pay");
+
+            // launch the intent
+            startActivityForResult(intent, REQUEST_PWD_PROMPT);
 
         }
 
@@ -366,6 +379,20 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         }
     };
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data){
+        // see if this is being called from our password request..?
+        if (requestCode == REQUEST_PWD_PROMPT) {
+            // ..it is. Did the user get the password right?
+            if (resultCode == RESULT_OK) {
+                // they got it right
+                doPayment();
+            } else {
+                // they got it wrong/cancelled
+            }
+        }
+    }
 
     public void onClickAccount(View v){
         if (!mShowAccountSel){
@@ -428,7 +455,17 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         //Called when payment is completed. Returns payment result and error message.
         @Override
-        public void paymentDone(final boolean ret, final String errorMsg) {
+        public void paymentDone(final boolean ret, final String transactionCode, final String errorMsg) {
+            if (ret){
+                SecuXPaymentHistory payhistory = new SecuXPaymentHistory();
+                Pair<Integer, String> hisret = mPaymentManager.getPaymentHistory(mToken, transactionCode, payhistory);
+                if (hisret.first == SecuXServerRequestHandler.SecuXRequestOK){
+                    Setting.getInstance().mLastPaymentHis = payhistory;
+                }else{
+                    Log.e(TAG, "Get transaction history from " + transactionCode + " failed!");
+                }
+            }
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -442,6 +479,8 @@ public class PaymentDetailsActivity extends BaseActivity {
                         //deprecated in API 26
                         v.vibrate(500);
                     }
+
+
 
                     MediaPlayer mediaPlayer = new MediaPlayer();
                     AssetFileDescriptor afd;
@@ -494,6 +533,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                     newIntent.putExtra(PAYMENT_STORENAME, mStoreName);
                     newIntent.putExtra(PAYMENT_AMOUNT, amountStr);
                     newIntent.putExtra(PAYMENT_DATE, dateStr);
+
                     startActivity(newIntent);
                 }
             });

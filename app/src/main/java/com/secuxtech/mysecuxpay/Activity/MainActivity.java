@@ -78,9 +78,7 @@ public class MainActivity extends BaseActivity {
         mViewPager.addOnPageChangeListener(mPageChangeListener);
         mViewPager.setAdapter(new TheFragmentAdapter(getSupportFragmentManager()));
 
-
     }
-
 
 
     /*

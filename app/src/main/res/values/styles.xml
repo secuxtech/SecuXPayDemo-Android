@@ -18,6 +18,12 @@
     <!--此屬性控制懸浮窗背景是否變暗-->
     <item name="android:backgroundDimEnabled">false</item>
     <item name="android:windowBackground">@android:color/transparent</item>
-</style>
+    </style>
+
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorMainNavItemSelect</item>
+        <item name="android:textColorSecondary">@color/colorMainNavItemNormal</item>
+    </style>
+
 
 </resources>

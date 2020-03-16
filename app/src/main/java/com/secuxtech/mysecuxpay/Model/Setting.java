@@ -2,6 +2,7 @@ package com.secuxtech.mysecuxpay.Model;
 
 import com.secuxtech.paymentkit.SecuXCoinAccount;
 import com.secuxtech.paymentkit.SecuXCoinTokenBalance;
+import com.secuxtech.paymentkit.SecuXPaymentHistory;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Setting {
     }
 
     public SecuXUserAccount mAccount = null;
+    public SecuXPaymentHistory mLastPaymentHis = null;
 
     private Setting() {
     }
