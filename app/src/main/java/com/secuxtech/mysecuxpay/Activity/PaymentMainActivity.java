@@ -255,8 +255,14 @@ public class PaymentMainActivity extends BaseActivity {
                         amount = payinfoJson.getString("amount");
                     }
 
+                    String coinTypeInfo = "";
                     if (payinfoJson.has("coinType") && payinfoJson.getString("coinType").compareTo("null")!=0) {
-                        coinType = payinfoJson.getString("coinType");
+                        coinTypeInfo = payinfoJson.getString("coinType");
+
+                        if (coinTypeInfo.contains(":")){
+                            coinType = coinTypeInfo.substring(0, coinTypeInfo.indexOf(':'));
+                        }
+
                         showAccountSelection = false;
                     }else{
                         showAccountSelection = true;
@@ -264,6 +270,8 @@ public class PaymentMainActivity extends BaseActivity {
 
                     if (payinfoJson.has("token") && payinfoJson.getString("token").compareTo("null")!=0) {
                         token = payinfoJson.getString("token");
+                    }else if (coinTypeInfo.contains(":")){
+                        token = coinTypeInfo.substring(coinTypeInfo.indexOf(':')+1);
                     }
 
                     final String devID = payinfoJson.getString("deviceID");

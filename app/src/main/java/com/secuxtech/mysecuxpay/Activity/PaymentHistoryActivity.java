@@ -42,8 +42,10 @@ public class PaymentHistoryActivity extends BaseActivity {
             SecuXPaymentHistory history = mPayHisArr.get(position);
             Log.i(TAG, history.mDetailsUrl);
 
-            Intent newIntent = new Intent(mContext, TokenTransferDetailsActivity.class);
-            newIntent.putExtra(TokenTransferDetailsActivity.TRANSACTION_HISTORY_DETAIL_URL, history.mDetailsUrl);
+            Setting.getInstance().mLastPaymentHis = history;
+            //Intent newIntent = new Intent(mContext, TokenTransferDetailsActivity.class);
+            //newIntent.putExtra(TokenTransferDetailsActivity.TRANSACTION_HISTORY_DETAIL_URL, history.mDetailsUrl);
+            Intent newIntent = new Intent(mContext, ReceiptActivity.class);
             startActivity(newIntent);
         }
     };

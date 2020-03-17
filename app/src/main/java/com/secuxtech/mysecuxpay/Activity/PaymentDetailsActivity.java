@@ -119,6 +119,8 @@ public class PaymentDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_details);
 
+        Setting.getInstance().mLastPaymentHis = null;
+
         Intent intent = getIntent();
         mPaymentInfo = intent.getStringExtra(PaymentMainActivity.PAYMENT_INFO);
         mAmount = intent.getStringExtra(PAYMENT_AMOUNT);
@@ -229,7 +231,6 @@ public class PaymentDetailsActivity extends BaseActivity {
             return;
         }
 
-
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!mBluetoothAdapter.isEnabled()) {
             // Bluetooth is not enabled :)
@@ -299,7 +300,6 @@ public class PaymentDetailsActivity extends BaseActivity {
             Log.i(TAG, e.getMessage());
             doPayment();
         }
-
     }
 
     private void doPayment(){
