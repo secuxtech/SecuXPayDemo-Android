@@ -124,7 +124,7 @@ public class RegisterFragment extends Fragment {
     private void checkInput(View v){
         if (v == mEdittextPwd){
             String pwd = mEdittextPwd.getText().toString();
-            if (pwd.length()==0){
+            if (pwd.length()<6){
                 mTextViewInvalidPwd.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvalidPwd.setVisibility(View.INVISIBLE);

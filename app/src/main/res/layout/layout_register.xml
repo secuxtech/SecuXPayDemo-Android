@@ -17,7 +17,10 @@
         android:theme="@style/LoginAndRegisterEditTextTheme"
 
         android:hint="Email"
+        android:textColorHint="@color/login_input_hint"
         android:inputType="textEmailAddress"
+        android:textColor="@color/login_input_text"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,7 +48,10 @@
         android:theme="@style/LoginAndRegisterEditTextTheme"
 
         android:hint="Phone"
+        android:textColorHint="@color/login_input_hint"
         android:inputType="textEmailAddress"
+        android:textColor="@color/login_input_text"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_email" />
@@ -72,8 +78,11 @@
         android:ems="10"
         android:theme="@style/LoginAndRegisterEditTextTheme"
 
-        android:hint="Password"
+        android:hint="Password (8~10 char)"
+        android:textColorHint="@color/login_input_hint"
         android:inputType="textPassword"
+        android:textColor="@color/login_input_text"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_phone" />
@@ -101,7 +110,10 @@
         android:theme="@style/LoginAndRegisterEditTextTheme"
 
         android:hint="Confirm password"
+        android:textColorHint="@color/login_input_hint"
         android:inputType="textPassword"
+        android:textColor="@color/login_input_text"
+
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_register_password" />

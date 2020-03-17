@@ -10,14 +10,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.secuxtech.mysecuxpay.Adapter.UserInfoListAdapter;
 import com.secuxtech.mysecuxpay.BuildConfig;
 import com.secuxtech.mysecuxpay.Interface.CommonItem;
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonEntryItem;
 import com.secuxtech.mysecuxpay.Utility.CommonSectionItem;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -31,6 +35,15 @@ public class UserInfoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
+        TextView tvName = findViewById(R.id.textview_userinfo_name);
+        tvName.setText(Setting.getInstance().mAccount.mAlias);
+
+        TextView tvEmail = findViewById(R.id.textview_userinfo_email);
+        tvEmail.setText(Setting.getInstance().mAccount.mEmail);
+
+        TextView tvTel = findViewById(R.id.textview_userinfo_tel);
+        tvTel.setText(Setting.getInstance().mAccount.mPhoneNum);
+
         mListViewInfo = findViewById(R.id.listview_userinfo);
 
         final ArrayList<CommonItem> itemlist = generateListData();
@@ -40,6 +53,20 @@ public class UserInfoActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(TAG,"click item " + position);
+
+                if (position==1){
+                    Intent i = new Intent(UserInfoActivity.this, ChangePasswordActivity.class);
+                    //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+
+                }else if (position==2){
+
+                    Setting.getInstance().mAccount = null;
+
+                    Intent i = new Intent(UserInfoActivity.this, MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                }
             }
         });
 
@@ -52,7 +79,7 @@ public class UserInfoActivity extends BaseActivity {
         ArrayList<CommonItem> countryList = new ArrayList<>();
 
         countryList.add(new CommonSectionItem("ACCOUNT"));
-        countryList.add(new CommonEntryItem("Update user information"));
+        //countryList.add(new CommonEntryItem("Update user information"));
         countryList.add(new CommonEntryItem("Change password"));
         countryList.add(new CommonEntryItem("Logout"));
 

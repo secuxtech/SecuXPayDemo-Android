@@ -2,12 +2,21 @@ package com.secuxtech.mysecuxpay.Activity;
 
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -52,6 +61,30 @@ public class MainActivity extends BaseActivity {
     private TabLayout.OnTabSelectedListener mTabSelListener = new TabLayout.OnTabSelectedListener() {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
+            //int tab = mTabLayout.getCurrentTab();
+            //View view = mTabLayout.getTabWidget().getChildAt(tab).setBackgroundColor(Color.CYAN);
+            /*
+            for(int n = 0; n < mTabLayout.getTabCount(); n++){
+
+                View tab = ((ViewGroup)mTabLayout.getChildAt(0)).getChildAt(n);
+
+                if(tab != null){
+
+                }
+            }
+
+
+
+            for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+                if (i == tab.getPosition()) {
+                    mTabLayout.getTabAt(i).getCustomView().setBackgroundColor(Color.parseColor("#198C19"));
+                } else {
+                    mTabLayout.getTabAt(i).getCustomView().setBackgroundColor(Color.parseColor("#f4f4f4"));
+                }
+            }
+
+            //tab.getCustomView().setBackgroundColor(Color.parseColor("#FFFFFF"));
+*/
             mViewPager.setCurrentItem(tab.getPosition());
         }
 
@@ -68,9 +101,24 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mShowBackButton = false;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //getWindow().setNavigationBarColor(Color.TRANSPARENT); // Navigation bar the soft bottom of some phones like nexus and some Samsung note series
+        //getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = this.getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //actionBar.setDisplayShowCustomEnabled(false);
+        //actionBar.setTitle("");
+        //actionBar.hide();
 
         mTabLayout = findViewById(R.id.tab_main_login_and_register);
         mTabLayout.addOnTabSelectedListener(mTabSelListener);

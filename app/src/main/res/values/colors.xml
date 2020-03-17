@@ -3,6 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorWhite">#FFFFFF</color>
     <color name="colorTitle">#1F2020</color>
     <color name="colorPageBkg">#F8F8F8</color>
     <color name="colorAccountInfo">#707070</color>
@@ -16,4 +17,10 @@
     <color name="colorAccountListBkg">#E9E9E9</color>
     <color name="colorMainNavItemNormal">#A2A2A2</color>
     <color name="colorMainNavItemSelect">#000000</color>
+    <color name="tab_background_selected">#001F2020</color>
+    <color name="tab_background_unselected">#008F8C8C</color>
+    <color name="tab_text_selected">#FFFFFF</color>
+    <color name="tab_text_unselected">#CCFFFFFF</color>
+    <color name="login_input_hint">#C8C8C8</color>
+    <color name="login_input_text">#FFFFFF</color>
 </resources>

@@ -1,11 +1,15 @@
 package com.secuxtech.mysecuxpay.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.secuxtech.mysecuxpay.Interface.CommonItem;
 import com.secuxtech.mysecuxpay.R;
@@ -57,7 +61,6 @@ public class UserInfoListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.layout_userinfo_section, parent, false);
             TextView tvSectionTitle = (TextView) convertView.findViewById(R.id.textview_sectionheader);
             tvSectionTitle.setText(((CommonSectionItem) item.get(position)).getTitle());
-
         }
         else
         {
@@ -67,6 +70,12 @@ public class UserInfoListAdapter extends BaseAdapter {
             TextView tvItemValue = (TextView) convertView.findViewById(R.id.textview_itemvale);
             tvItemTitle.setText(((CommonEntryItem) item.get(position)).getTitle());
             tvItemValue.setText(((CommonEntryItem) item.get(position)).getValue());
+
+            if (position==1 || position==2){
+                ImageView ivNext = convertView.findViewById(R.id.imageview_item_next);
+                ivNext.setVisibility(View.VISIBLE);
+                ivNext.getLayoutParams().width = 30;
+            }
         }
 
         return convertView;

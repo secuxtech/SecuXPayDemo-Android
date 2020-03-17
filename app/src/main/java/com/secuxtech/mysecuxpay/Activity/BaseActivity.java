@@ -33,28 +33,29 @@ public class BaseActivity extends AppCompatActivity {
 
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorTitle)); // Navigation bar the soft bottom of some phones like nexus and some Samsung note series
         getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.colorTitle));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.colorTitle)));
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(mShowBackButton);
-        //getSupportActionBar().setTitle("Home");
-        //getSupportActionBar().setSubtitle("sairam");
-
-
 
         LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflator.inflate(R.layout.layout_secux_logo_imageview, null);
 
         ActionBar actionBar = getSupportActionBar();
-        if (mShowLogo) {
+        if (actionBar!=null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.colorTitle)));
+            actionBar.setDisplayHomeAsUpEnabled(mShowBackButton);
+            if (mShowLogo) {
 
-            actionBar.setDisplayShowCustomEnabled(true);
-            actionBar.setTitle("");
-            actionBar.setCustomView(v);
-        }else{
-            actionBar.setDisplayShowCustomEnabled(false);
-            actionBar.setTitle("");
-            actionBar.hide();
+                actionBar.setDisplayShowCustomEnabled(true);
+                actionBar.setTitle("");
+                actionBar.setCustomView(v);
+            } else {
+                actionBar.setDisplayShowCustomEnabled(false);
+                actionBar.setTitle("");
+                actionBar.hide();
+            }
         }
+
+
+
+
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 

@@ -29,6 +29,20 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activity.ChangePasswordActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.secuxtech.mysecuxpay.Activity.UserInfoActivity" />
+        </activity>
+        <activity
+            android:name=".Activity.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Activity.ReceiptActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -70,13 +84,9 @@
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
         <activity android:name=".Activity.BaseActivity" />
-        <activity android:name=".Activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name=".Activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"

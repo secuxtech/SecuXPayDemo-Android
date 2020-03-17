@@ -271,6 +271,11 @@ public class PaymentMainActivity extends BaseActivity {
 
                     SecuXCoinAccount coinAcc = Setting.getInstance().mAccount.getCoinAccount(coinType);
 
+                    if (devID.length()==0){
+                        showMessageInMain("Unsupported device!");
+                        return;
+                    }
+
                     if (coinAcc == null){
                         showMessageInMain("Unsupported Coin Type!");
                         return;
