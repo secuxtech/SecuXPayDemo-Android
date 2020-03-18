@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
@@ -68,8 +69,8 @@ public class ChangePasswordActivity extends BaseActivity {
                             Toast toast = Toast.makeText(mContext, "Password changed!", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
-
-                            onBackPressed();
+                            Setting.getInstance().mAccount.mPassword = mEdittextPwd.getText().toString();
+                            finish();
                         }else{
                             Toast toast = Toast.makeText(mContext, "Change password failed!", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER,0,0);
