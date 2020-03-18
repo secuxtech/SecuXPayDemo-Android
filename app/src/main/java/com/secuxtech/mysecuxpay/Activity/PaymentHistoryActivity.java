@@ -103,7 +103,6 @@ public class PaymentHistoryActivity extends BaseActivity {
                 }
             }).start();
 
-
         }
     };
 
