@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.secuxtech.mysecuxpay.BuildConfig;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.paymentkit.SecuXCoinAccount;
@@ -60,6 +61,14 @@ public class PaymentMainActivity extends BaseActivity {
             if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
+        }
+
+        BottomNavigationView navigationView = findViewById(R.id.navigation_main);
+        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        MenuItem menuItem = navigationView.getMenu().getItem(1).setChecked(true);
+
+        if (BuildConfig.DEBUG && Setting.getInstance().mTestModel){
+            return;
         }
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -97,9 +106,7 @@ public class PaymentMainActivity extends BaseActivity {
             // Bluetooth is enabled
         }
 
-        BottomNavigationView navigationView = findViewById(R.id.navigation_main);
-        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        MenuItem menuItem = navigationView.getMenu().getItem(1).setChecked(true);
+
     }
 
     @Override
@@ -110,6 +117,10 @@ public class PaymentMainActivity extends BaseActivity {
             mPendingIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
+        }
+
+        if (BuildConfig.DEBUG && Setting.getInstance().mTestModel){
+            return;
         }
 
         mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
@@ -198,6 +209,11 @@ public class PaymentMainActivity extends BaseActivity {
 
     public void onScanQRCodeButtonClick(View v)
     {
+        if (BuildConfig.DEBUG && Setting.getInstance().mTestModel) {
+            handlePaymentInfo("{\"amount\":\"7\", \"coinType\":\"DCT:SPC\",\"deviceIDhash\":\"f962639145992d7a710d33dcca503575eb85d759\"}");
+            return;
+        }
+
         mScanIntegrator = new IntentIntegrator(PaymentMainActivity.this);
         mScanIntegrator.setPrompt("Start scan ...");
         mScanIntegrator.setTimeout(30000);
