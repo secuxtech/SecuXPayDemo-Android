@@ -22,6 +22,8 @@ public class Setting {
     public SecuXUserAccount mAccount = null;
     public SecuXPaymentHistory mLastPaymentHis = null;
 
+    public boolean mTestModel = false;
+
     private Setting() {
     }
 
