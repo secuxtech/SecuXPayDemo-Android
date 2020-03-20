@@ -46,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.an.biometric.BiometricCallback;
 import com.an.biometric.BiometricManager;
 import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
+import com.secuxtech.mysecuxpay.BuildConfig;
 import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
 import com.secuxtech.mysecuxpay.Model.CoinTokenAccount;
 import com.secuxtech.mysecuxpay.Model.Setting;
@@ -231,12 +232,37 @@ public class PaymentDetailsActivity extends BaseActivity {
             return;
         }
 
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mBluetoothAdapter.isEnabled()) {
-            // Bluetooth is not enabled :)
-            Toast toast = Toast.makeText(mContext, "Please turn on Bluetooth! Payment abort!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.BOTTOM,0,200);
-            toast.show();
+        mAmount = strAmount;
+
+        if (BuildConfig.DEBUG && Setting.getInstance().mTestModel){
+
+            SecuXPaymentHistory payhistory = new SecuXPaymentHistory();
+            Pair<Integer, String> hisret = mPaymentManager.getPaymentHistory(mToken, "b2a908614bb8484aa8864c6ac0ba709b", payhistory);
+            if (hisret.first == SecuXServerRequestHandler.SecuXRequestOK){
+                Setting.getInstance().mLastPaymentHis = payhistory;
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    SimpleDateFormat simpleDateFormat =
+                            new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+                    Date date = Calendar.getInstance().getTime();
+                    String dateStr = simpleDateFormat.format(date);
+
+                    String amountStr = mAmount.toString() + " " + mToken;
+
+                    Intent newIntent = new Intent(mContext, PaymentResultActivity.class);
+                    newIntent.putExtra(PAYMENT_RESULT, true);
+                    newIntent.putExtra(PAYMENT_STORENAME, mStoreName);
+                    newIntent.putExtra(PAYMENT_AMOUNT, amountStr);
+                    newIntent.putExtra(PAYMENT_DATE, dateStr);
+
+                    startActivity(newIntent);
+                }
+            });
+
             return;
         }
 
@@ -286,7 +312,17 @@ public class PaymentDetailsActivity extends BaseActivity {
         }, 10000);
         */
 
-        mAmount = strAmount;
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mBluetoothAdapter.isEnabled()) {
+            // Bluetooth is not enabled :)
+            Toast toast = Toast.makeText(mContext, "Please turn on Bluetooth! Payment abort!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.BOTTOM,0,200);
+            toast.show();
+            return;
+        }
+
+
 
         try{
             new BiometricManager.BiometricBuilder(this)
