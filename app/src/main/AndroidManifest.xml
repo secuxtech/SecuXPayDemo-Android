@@ -23,7 +23,6 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <application
-        tools:replace="android:allowBackup"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -73,7 +72,6 @@
                 android:value="com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity" />
         </activity>
         <activity android:name=".Activity.CoinAccountListActivity" />
-        <activity android:name=".Activity.RegistryActivity" />
         <activity android:name=".Activity.LoginActivity" android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".Activity.PaymentHistoryActivity">
             <meta-data
