@@ -6,12 +6,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -42,6 +45,12 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = this.getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
         /*
         mEdittextEmail = findViewById(R.id.editText_lgoin_email);
         mEdittextEmail.setOnFocusChangeListener(mViewFocusChangeListener);
@@ -60,7 +69,8 @@ public class LoginActivity extends BaseActivity {
         if (mLoginFragment == null) {
             FragmentTransaction ft = fm.beginTransaction();
             mLoginFragment =new LoginFragment();
-            ft.add(android.R.id.content,mLoginFragment,"fragment_login");
+            //ft.add(android.R.id.content,mLoginFragment,"fragment_login");
+            ft.add(R.id.llayout_login,mLoginFragment,"fragment_login");
             ft.commit();
         }
     }
