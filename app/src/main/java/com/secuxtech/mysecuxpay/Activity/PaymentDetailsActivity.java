@@ -361,27 +361,27 @@ public class PaymentDetailsActivity extends BaseActivity {
     private BiometricCallback mBiometricCallback = new BiometricCallback() {
         @Override
         public void onSdkVersionNotSupported() {
-
+            Log.e(TAG, "onSdkVersionNotSupported");
         }
 
         @Override
         public void onBiometricAuthenticationNotSupported() {
-
+            Log.e(TAG, "onBiometricAuthenticationNotSupported");
         }
 
         @Override
         public void onBiometricAuthenticationNotAvailable() {
-
+            Log.e(TAG, "onBiometricAuthenticationNotAvailable");
         }
 
         @Override
         public void onBiometricAuthenticationPermissionNotGranted() {
-
+            Log.e(TAG, "onBiometricAuthenticationPermissionNotGranted");
         }
 
         @Override
         public void onBiometricAuthenticationInternalError(String error) {
-
+            Log.e(TAG, "onBiometricAuthenticationInternalError " + error);
         }
 
         @Override
