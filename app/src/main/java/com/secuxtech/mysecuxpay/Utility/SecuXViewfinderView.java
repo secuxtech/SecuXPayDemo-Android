@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 
 import com.google.zxing.ResultPoint;
+import com.journeyapps.barcodescanner.Size;
 import com.journeyapps.barcodescanner.ViewfinderView;
 
 import java.util.List;
@@ -34,12 +35,12 @@ public class SecuXViewfinderView extends ViewfinderView {
     @Override
     public void onDraw(Canvas canvas) {
         refreshSizes();
-        if (framingRect == null || previewFramingRect == null) {
+        if (framingRect == null || previewSize == null) {
             return;
         }
 
         final Rect frame = framingRect;
-        final Rect previewFrame = previewFramingRect;
+        final Size previewFrame = previewSize;
 
         final int width = canvas.getWidth();
         final int height = canvas.getHeight();
@@ -119,8 +120,8 @@ public class SecuXViewfinderView extends ViewfinderView {
             final int middle = frame.height() / 2 + frame.top;
             canvas.drawRect(frame.left + 2, middle - 1, frame.right - 1, middle + 2, paint);
 
-            final float scaleX = frame.width() / (float) previewFrame.width();
-            final float scaleY = frame.height() / (float) previewFrame.height();
+            final float scaleX = frame.width() / (float) previewFrame.width;
+            final float scaleY = frame.height() / (float) previewFrame.height;
 
             final int frameLeft = frame.left;
             final int frameTop = frame.top;
