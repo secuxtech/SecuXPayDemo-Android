@@ -9,6 +9,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.ColorDrawable;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -53,12 +56,27 @@ public class BaseActivity extends AppCompatActivity {
             }
         }
 
-
-
-
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        this.checkWifi();
+    }
+
+    protected boolean checkWifi(){
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        //SupplicantState supState = wifiInfo.getSupplicantState();
+        if (wifiInfo.getNetworkId() == -1){
+            this.showMessageInMain("No internet! Please check the Wifi");
+            return false;
+        }
+
+        return true;
     }
 
     protected void showMessageInMain(final String msg){
