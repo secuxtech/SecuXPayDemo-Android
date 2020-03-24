@@ -33,7 +33,7 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends BaseFragment {
 
     private SecuXAccountManager mAccountManager = new SecuXAccountManager();
 
@@ -113,7 +113,9 @@ public class RegisterFragment extends Fragment {
                 if (event == null || !event.isShiftPressed()) {
                     // the user is done typing.
                     Log.i(TAG, "Edit done");
-                    checkInput(v);
+                    if (checkInput(v) && v == mEdittextConfirmPwd){
+                        onRegisterButtonClick(v);
+                    }
                     return true; // consume.
                 }
             }
@@ -121,13 +123,14 @@ public class RegisterFragment extends Fragment {
         }
     };
 
-    private void checkInput(View v){
+    private boolean checkInput(View v){
         if (v == mEdittextPwd){
             String pwd = mEdittextPwd.getText().toString();
             if (pwd.length()<6){
                 mTextViewInvalidPwd.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvalidPwd.setVisibility(View.INVISIBLE);
+                return true;
             }
         }else if (v==mEdittextEmail){
             String email = mEdittextEmail.getText().toString();
@@ -137,6 +140,7 @@ public class RegisterFragment extends Fragment {
                 mTextViewInvalidEmail.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvalidEmail.setVisibility(View.INVISIBLE);
+                return true;
             }
         }else if (v==mEdittextPhone){
             String phone = mEdittextPhone.getText().toString();
@@ -144,6 +148,7 @@ public class RegisterFragment extends Fragment {
                 mTextViewInvlidePhone.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvlidePhone.setVisibility(View.INVISIBLE);
+                return true;
             }
         }else if (v==mEdittextConfirmPwd){
             String pwd = mEdittextPwd.getText().toString();
@@ -152,9 +157,10 @@ public class RegisterFragment extends Fragment {
                 mTextViewInvalidConfirmPwd.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvalidConfirmPwd.setVisibility(View.INVISIBLE);
+                return true;
             }
         }
-
+        return false;
     }
 
     public void onRegisterButtonClick(View v)
@@ -162,7 +168,11 @@ public class RegisterFragment extends Fragment {
         //Intent newIntent = new Intent(mContext, MainActivity.class);
         //startActivity(newIntent);
 
-        ((MainActivity)getActivity()).hideKeyboard(v);
+        hideKeyboard(v);
+
+        if (!checkWifi()){
+            return;
+        }
 
         checkInput(mEdittextEmail);
         checkInput(mEdittextPwd);
