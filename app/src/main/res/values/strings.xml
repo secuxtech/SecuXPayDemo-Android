@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MySecuXPay</string>
+    <string name="app_name">MyEvPay</string>
     <string name="main_nav_accounts">Accounts</string>
     <string name="main_nav_payment">Payment</string>
     <string name="account_operation_transactions">Transactions</string>
