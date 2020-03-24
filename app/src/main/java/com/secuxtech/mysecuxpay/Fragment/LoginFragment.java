@@ -43,7 +43,7 @@ import static androidx.constraintlayout.widget.Constraints.TAG;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginFragment extends Fragment {
+public class LoginFragment extends BaseFragment {
 
     private SecuXAccountManager mAccountManager = new SecuXAccountManager();
     private EditText mEdittextEmail;
@@ -118,10 +118,6 @@ public class LoginFragment extends Fragment {
         }
     };
 
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
 
     private TextView.OnEditorActionListener mTextviewEditorListener = new EditText.OnEditorActionListener(){
         @Override
@@ -135,7 +131,11 @@ public class LoginFragment extends Fragment {
                 if (event == null || !event.isShiftPressed()) {
                     // the user is done typing.
                     Log.i(TAG, "Edit done");
-                    checkInput(v);
+
+
+                    if (checkInput(v) && v==mEdittextPwd){
+                        onLoginButtonClick(v);
+                    }
                     return true; // consume.
                 }
             }
@@ -143,13 +143,14 @@ public class LoginFragment extends Fragment {
         }
     };
 
-    private void checkInput(View v){
+    private boolean checkInput(View v){
         if (v == mEdittextPwd){
             String pwd = mEdittextPwd.getText().toString();
             if (pwd.length()==0){
                 mTextViewInvalidPwd.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvalidPwd.setVisibility(View.INVISIBLE);
+                return true;
             }
         }else if (v==mEdittextEmail){
             String email = mEdittextEmail.getText().toString();
@@ -159,9 +160,10 @@ public class LoginFragment extends Fragment {
                 mTextViewInvalidEmail.setVisibility(View.VISIBLE);
             }else{
                 mTextViewInvalidEmail.setVisibility(View.INVISIBLE);
+                return true;
             }
         }
-
+        return false;
     }
 
     private BiometricCallback mBiometricCallback = new BiometricCallback() {
@@ -224,6 +226,10 @@ public class LoginFragment extends Fragment {
         //startActivity(newIntent);
 
         hideKeyboard(v);
+
+        if (!checkWifi()){
+            return;
+        }
 
         checkInput(mEdittextEmail);
         checkInput(mEdittextPwd);
