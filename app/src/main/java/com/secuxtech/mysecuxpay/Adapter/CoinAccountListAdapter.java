@@ -48,7 +48,7 @@ public class CoinAccountListAdapter extends RecyclerView.Adapter<CoinAccountList
 
         holder.textviewAccountName.setText(accItem.mAccountName);
         holder.textviewBalance.setText(accItem.mBalance.mFormattedBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + " " + accItem.mToken);
-        holder.textviewUsdbalance.setText("$" + accItem.mBalance.mUSDBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+        //holder.textviewUsdbalance.setText("$" + accItem.mBalance.mUSDBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         holder.imageviewCoinLogo.setImageResource(AccountUtil.getCoinLogo(accItem.mCoinType));
 
     }
@@ -66,7 +66,7 @@ public class CoinAccountListAdapter extends RecyclerView.Adapter<CoinAccountList
             super(itemView);
 
             textviewAccountName = itemView.findViewById(R.id.textView_account_name);
-            textviewUsdbalance = itemView.findViewById(R.id.textView_account_usdbalance);
+            //textviewUsdbalance = itemView.findViewById(R.id.textView_account_usdbalance);
             textviewBalance = itemView.findViewById(R.id.textView_account_balance);
             imageviewCoinLogo = itemView.findViewById(R.id.imageView_account_coinlogo);
 
