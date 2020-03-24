@@ -209,6 +209,10 @@ public class PaymentMainActivity extends BaseActivity {
 
     public void onScanQRCodeButtonClick(View v)
     {
+        if (!this.checkWifi()){
+            return;
+        }
+
         if (BuildConfig.DEBUG && Setting.getInstance().mTestModel) {
             handlePaymentInfo("{\"amount\":\"7\", \"coinType\":\"DCT:SPC\",\"deviceIDhash\":\"f962639145992d7a710d33dcca503575eb85d759\"}");
             return;
@@ -222,6 +226,10 @@ public class PaymentMainActivity extends BaseActivity {
     }
 
     public void onHistoryButtonClick(View v){
+        if (!this.checkWifi()){
+            return;
+        }
+
         Intent newIntent = new Intent(mContext, PaymentHistoryActivity.class);
         startActivity(newIntent);
     }
