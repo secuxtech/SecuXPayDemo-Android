@@ -179,8 +179,8 @@ public class PaymentDetailsActivity extends BaseActivity {
                         TextView textviewBalance = findViewById(R.id.textView_account_balance);
                         textviewBalance.setText(String.format("%.2f", mTokenBalance.mFormattedBalance) + " " + mToken);
 
-                        TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
-                        textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
+                        //TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
+                        //textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
 
 
                         CardView cardViewAccount = findViewById(R.id.cardView_account);
@@ -215,6 +215,10 @@ public class PaymentDetailsActivity extends BaseActivity {
     }
 
     public void onPayButtonClick(View v){
+
+        if (!this.checkWifi()){
+            return;
+        }
 
         EditText edittextAmount = findViewById(R.id.editText_paymentinput_amount);
         String strAmount = edittextAmount.getText().toString();
@@ -418,6 +422,7 @@ public class PaymentDetailsActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data){
+        super.onActivityResult(resultCode, resultCode, data);
         // see if this is being called from our password request..?
         if (requestCode == REQUEST_PWD_PROMPT) {
             // ..it is. Did the user get the password right?
@@ -463,8 +468,8 @@ public class PaymentDetailsActivity extends BaseActivity {
                 TextView textviewBalance = findViewById(R.id.textView_account_balance);
                 textviewBalance.setText(String.format("%.2f", mTokenBalance.mFormattedBalance) + " " + mToken);
 
-                TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
-                textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
+                //TextView textviewUsdbalance = findViewById(R.id.textView_account_usdbalance);
+                //textviewUsdbalance.setText(String.format("$ %.2f", mTokenBalance.mUSDBalance));
 
                 ImageView payinputLogo = findViewById(R.id.imageView_paymentinput_coinlogo);
                 payinputLogo.setImageResource(AccountUtil.getCoinLogo(account.mCoinType));
