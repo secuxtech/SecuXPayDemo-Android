@@ -2,6 +2,7 @@ package com.secuxtech.mysecuxpay.Activity;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -12,26 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
 import com.secuxtech.mysecuxpay.Fragment.LoginFragment;
 
 import com.secuxtech.mysecuxpay.Fragment.RegisterFragment;
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.AccountUtil;
 
-import java.util.ArrayList;
-
-import static androidx.core.content.ContextCompat.getSystemService;
 
 public class MainActivity extends BaseActivity {
 
@@ -40,6 +39,8 @@ public class MainActivity extends BaseActivity {
     private TabLayout mTabLayout;
     private LoginFragment mLoginFragment = new LoginFragment();
     private RegisterFragment mRegisterFragment = new RegisterFragment();
+
+    private Dialog mCoinTokenSelDialog;
 
     private ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
@@ -163,6 +164,23 @@ public class MainActivity extends BaseActivity {
 
     }
     */
+
+    public void onCoinTokenSelClick(View v){
+
+        /*
+        mCoinTokenSelDialog = new Dialog(this);
+        // dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mCoinTokenSelDialog.setCancelable(true);
+        mCoinTokenSelDialog.setContentView(R.layout.dialog_account_list_selection_layout);
+
+        RecyclerView recyclerView = mCoinTokenSelDialog.findViewById(R.id.recyclerView_accountsel_dialog);
+        CoinAccountListAdapter adapterRe = new CoinAccountListAdapter(this, AccountUtil.getCoinTokenAccounts(), null);
+        recyclerView.setAdapter(adapterRe);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+
+        mCoinTokenSelDialog.show();
+        */
+    }
 
 
     public class TheFragmentAdapter extends FragmentPagerAdapter {

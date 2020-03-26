@@ -1,11 +1,15 @@
 package com.secuxtech.mysecuxpay.Fragment;
 
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.Gravity;
@@ -16,13 +20,19 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity;
 import com.secuxtech.mysecuxpay.Activity.MainActivity;
+import com.secuxtech.mysecuxpay.Activity.PaymentDetailsActivity;
+import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
+import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
+import com.secuxtech.mysecuxpay.Model.CoinTokenAccount;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.AccountUtil;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
 import com.secuxtech.paymentkit.SecuXServerRequestHandler;
@@ -45,6 +55,8 @@ public class RegisterFragment extends BaseFragment {
     private TextView mTextViewInvalidPwd;
     private TextView mTextViewInvalidConfirmPwd;
     private TextView mTextViewInvlidePhone;
+
+
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -162,6 +174,8 @@ public class RegisterFragment extends BaseFragment {
         }
         return false;
     }
+
+
 
     public void onRegisterButtonClick(View v)
     {
