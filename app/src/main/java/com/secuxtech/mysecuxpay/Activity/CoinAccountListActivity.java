@@ -71,7 +71,7 @@ public class CoinAccountListActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mAccountManager.getAccountBalance(Setting.getInstance().mAccount);
+                mAccountManager.getAccountBalance(Setting.getInstance().mAccount, "DCT", "SPC");
 
                 mTokenAccountArray = AccountUtil.getCoinTokenAccounts();
 

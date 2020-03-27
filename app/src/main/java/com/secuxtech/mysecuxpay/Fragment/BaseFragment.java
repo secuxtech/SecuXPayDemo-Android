@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 public class BaseFragment  extends Fragment {
 
     protected boolean checkWifi(){
+        /*
         WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Activity.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         //SupplicantState supState = wifiInfo.getSupplicantState();
@@ -25,7 +26,7 @@ public class BaseFragment  extends Fragment {
             this.showMessageInMain("No internet! Please check the Wifi");
             return false;
         }
-
+        */
         return true;
     }
 

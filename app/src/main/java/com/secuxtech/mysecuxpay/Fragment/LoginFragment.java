@@ -245,27 +245,48 @@ public class LoginFragment extends BaseFragment {
         String pwd = mEdittextPwd.getText().toString();
 
         //Setting.getInstance().mAccount = new SecuXUserAccount("maochuntest6@secuxtech.com", "0975123456", "12345678");
-        final SecuXUserAccount account = new SecuXUserAccount(email, "", pwd);
+        final SecuXUserAccount account = new SecuXUserAccount(email, pwd);
 
         CommonProgressDialog.showProgressDialog(getActivity(), "Login...");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Pair<Integer, String> ret = mAccountManager.loginUserAccount(account);
+                Pair<Integer, String> ret = mAccountManager.loginUserAccount(account);
+                if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CommonProgressDialog.dismiss();
+                            Toast toast = Toast.makeText(getActivity(), "Login failed! Invalid email account or password", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER,0,0);
+                            toast.show();
+                        }
+                    });
+
+                }
+
+                ret = mAccountManager.getCoinAccountList(account);
+                if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CommonProgressDialog.dismiss();
+                            Toast toast = Toast.makeText(getActivity(), "Login failed! Get coin token account list failed!", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER,0,0);
+                            toast.show();
+                        }
+                    });
+                }
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         CommonProgressDialog.dismiss();
-                        if (ret.first== SecuXServerRequestHandler.SecuXRequestOK) {
-                            Setting.getInstance().mAccount = account;
-                            Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
-                            startActivity(newIntent);
-                        }else{
-                            Toast toast = Toast.makeText(getActivity(), "Login failed! Invalid email account or password", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER,0,0);
-                            toast.show();
-                        }
+
+                        Setting.getInstance().mAccount = account;
+                        Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
+                        startActivity(newIntent);
+
                     }
                 });
 

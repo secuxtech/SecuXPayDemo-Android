@@ -66,7 +66,7 @@ public class TokenTransHistoryActivity extends BaseActivity {
             @Override
             public void run() {
 
-                Pair<Integer, String> ret = mAccountManager.getTransferHistory(Setting.getInstance().mAccount, mCoinType, mToken, 1, 20, mTransHistoryArray);
+                Pair<Integer, String> ret = mAccountManager.getTransferHistory(mCoinType, mToken, 1, 20, mTransHistoryArray);
                 if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
                     showMessageInMain("Get payment history failed! Error: " + ret.second);
 

@@ -68,6 +68,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected boolean checkWifi(){
+        /*
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         //SupplicantState supState = wifiInfo.getSupplicantState();
@@ -75,7 +76,7 @@ public class BaseActivity extends AppCompatActivity {
             this.showMessageInMain("No internet! Please check the Wifi");
             return false;
         }
-
+        */
         return true;
     }
 

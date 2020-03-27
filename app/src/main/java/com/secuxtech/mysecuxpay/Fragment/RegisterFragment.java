@@ -209,37 +209,57 @@ public class RegisterFragment extends BaseFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Pair<Integer, String> ret = mAccountManager.registerUserAccount(account);
+                Pair<Integer, String> ret = mAccountManager.registerUserAccount(account, "DCT", "SPC");
                 if (ret.first == SecuXServerRequestHandler.SecuXRequestOK) {
 
                     account.mCoinAccountArr.clear();
-                    final Pair<Integer, String> loginRet = mAccountManager.loginUserAccount(account);
+
+                    ret = mAccountManager.loginUserAccount(account);
+                    if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                CommonProgressDialog.dismiss();
+                                Toast toast = Toast.makeText(getActivity(), "Login failed! Invalid email account or password", Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.CENTER,0,0);
+                                toast.show();
+                            }
+                        });
+
+                    }
+
+                    ret = mAccountManager.getCoinAccountList(account);
+                    if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                CommonProgressDialog.dismiss();
+                                Toast toast = Toast.makeText(getActivity(), "Login failed! Get coin token account list failed!", Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.CENTER,0,0);
+                                toast.show();
+                            }
+                        });
+                    }
+
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             CommonProgressDialog.dismiss();
-                            if (loginRet.first == SecuXServerRequestHandler.SecuXRequestOK) {
 
-                                //Pair<Integer, String> loginRet = mAccountManager.loginUserAccount(account);
-
-                                Setting.getInstance().mAccount = account;
-                                Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
-                                startActivity(newIntent);
-                            } else {
-                                Toast toast = Toast.makeText(getActivity(), "Login failed! Error: " + loginRet.second, Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER, 0, 0);
-                                toast.show();
-                            }
+                            Setting.getInstance().mAccount = account;
+                            Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
+                            startActivity(newIntent);
 
                         }
                     });
 
                 } else {
+                    final String error = ret.second;
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             CommonProgressDialog.dismiss();
-                            Toast toast = Toast.makeText(getActivity(), "Register failed! Error: " + ret.second, Toast.LENGTH_LONG);
+                            Toast toast = Toast.makeText(getActivity(), "Register failed! Error: " + error, Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                         }
