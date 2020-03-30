@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -68,16 +70,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected boolean checkWifi(){
-        /*
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        //SupplicantState supState = wifiInfo.getSupplicantState();
-        if (wifiInfo.getNetworkId() == -1){
-            this.showMessageInMain("No internet! Please check the Wifi");
-            return false;
-        }
-        */
-        return true;
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     protected void showMessageInMain(final String msg){
