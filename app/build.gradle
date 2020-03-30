@@ -66,4 +66,5 @@ dependencies {
 
     implementation 'androidx.biometric:biometric:1.0.0'
     implementation(group: 'com.an.biometric', name: 'biometric-auth', version: '0.1.0', ext: 'aar', classifier: '')
+
 }
