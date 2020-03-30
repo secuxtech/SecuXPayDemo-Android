@@ -31,7 +31,7 @@
             android:layout_marginLeft="5dp"
             android:layout_gravity="center_vertical"
 
-            android:text="DCT, SPC"
+            android:text="SPC"
             android:textSize="17sp"
             android:textColor="#FFFFFF"/>
 
