@@ -1,6 +1,8 @@
 package com.secuxtech.mysecuxpay.Activity;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
@@ -8,28 +10,33 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ListView;
 
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Constraints;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.PagerAdapter;
+
+import androidx.transition.Fade;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
 import com.secuxtech.mysecuxpay.Fragment.LoginFragment;
 
 import com.secuxtech.mysecuxpay.Fragment.RegisterFragment;
+import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
-import com.secuxtech.mysecuxpay.Utility.AccountUtil;
+import com.secuxtech.mysecuxpay.Utility.ExpandCollapseAnimation;
 
 
 public class MainActivity extends BaseActivity {
@@ -39,6 +46,8 @@ public class MainActivity extends BaseActivity {
     private TabLayout mTabLayout;
     private LoginFragment mLoginFragment = new LoginFragment();
     private RegisterFragment mRegisterFragment = new RegisterFragment();
+
+    boolean mShowCoinTokenSelList = false;
 
     private Dialog mCoinTokenSelDialog;
 
@@ -50,6 +59,9 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public void onPageSelected(int position) {
+            if (position == 1){
+                mRegisterFragment.loadCoinTokenArray();
+            }
             mTabLayout.getTabAt(position).select();
         }
 
@@ -121,11 +133,15 @@ public class MainActivity extends BaseActivity {
         //actionBar.setTitle("");
         //actionBar.hide();
 
+        mRegisterFragment.loadCoinTokenArray();
+
         mTabLayout = findViewById(R.id.tab_main_login_and_register);
         mTabLayout.addOnTabSelectedListener(mTabSelListener);
         mViewPager = findViewById(R.id.viewPage_main_tab);
         mViewPager.addOnPageChangeListener(mPageChangeListener);
         mViewPager.setAdapter(new TheFragmentAdapter(getSupportFragmentManager()));
+
+
 
     }
 
@@ -166,20 +182,8 @@ public class MainActivity extends BaseActivity {
     */
 
     public void onCoinTokenSelClick(View v){
+        mRegisterFragment.toggleCoinTokenListView();
 
-        /*
-        mCoinTokenSelDialog = new Dialog(this);
-        // dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mCoinTokenSelDialog.setCancelable(true);
-        mCoinTokenSelDialog.setContentView(R.layout.dialog_account_list_selection_layout);
-
-        RecyclerView recyclerView = mCoinTokenSelDialog.findViewById(R.id.recyclerView_accountsel_dialog);
-        CoinAccountListAdapter adapterRe = new CoinAccountListAdapter(this, AccountUtil.getCoinTokenAccounts(), null);
-        recyclerView.setAdapter(adapterRe);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getApplicationContext(), LinearLayoutManager.VERTICAL, false));
-
-        mCoinTokenSelDialog.show();
-        */
     }
 
 
