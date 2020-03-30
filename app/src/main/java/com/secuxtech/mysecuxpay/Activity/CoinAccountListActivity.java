@@ -57,6 +57,8 @@ public class CoinAccountListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coin_account_list);
 
+
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView_acclist_accounts);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
 
