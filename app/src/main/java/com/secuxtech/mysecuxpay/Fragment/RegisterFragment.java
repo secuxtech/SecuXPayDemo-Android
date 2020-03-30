@@ -1,6 +1,7 @@
 package com.secuxtech.mysecuxpay.Fragment;
 
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -15,25 +16,36 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.secuxtech.mysecuxpay.Activity.ChangePasswordActivity;
 import com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity;
 import com.secuxtech.mysecuxpay.Activity.MainActivity;
 import com.secuxtech.mysecuxpay.Activity.PaymentDetailsActivity;
+import com.secuxtech.mysecuxpay.Activity.UserInfoActivity;
 import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
+import com.secuxtech.mysecuxpay.Adapter.SupportedCoinTokeListAdapter;
+import com.secuxtech.mysecuxpay.Adapter.UserInfoListAdapter;
 import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
 import com.secuxtech.mysecuxpay.Model.CoinTokenAccount;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.AccountUtil;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
+import com.secuxtech.mysecuxpay.Utility.ExpandCollapseAnimation;
 import com.secuxtech.paymentkit.SecuXAccountManager;
 import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 import com.secuxtech.paymentkit.SecuXUserAccount;
@@ -55,8 +67,9 @@ public class RegisterFragment extends BaseFragment {
     private TextView mTextViewInvalidPwd;
     private TextView mTextViewInvalidConfirmPwd;
     private TextView mTextViewInvlidePhone;
+    private ListView mListViewCoinToken;
 
-
+    boolean mShowCoinTokenSelList = false;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -90,6 +103,28 @@ public class RegisterFragment extends BaseFragment {
         mTextViewInvalidPwd = view.findViewById(R.id.textView_register_invalid_password);
         mTextViewInvalidConfirmPwd = view.findViewById(R.id.textView_register_invalid_confirmpassword);
 
+        view.setOnTouchListener(mViewTouchListener);
+
+        mListViewCoinToken = view.findViewById(R.id.listview_supported_cointoken);
+
+        mListViewCoinToken.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(TAG,"click item " + position);
+
+                Pair<String, String> item = Setting.getInstance().mCoinTokenArray.get(position);
+                TextView tvItemTitle = (TextView) getActivity().findViewById(R.id.textView_cointokensel_txt);
+                tvItemTitle.setText(item.second);
+
+                ImageView imgView = getActivity().findViewById(R.id.imageView_cointokensel_coinlogo);
+                imgView.setImageResource(AccountUtil.getCoinLogo(item.first));
+
+                toggleCoinTokenListView();
+            }
+        });
+        mListViewCoinToken.getLayoutParams().height = 0;
+        mListViewCoinToken.setVisibility(View.INVISIBLE);
+
         Button loginBtn = view.findViewById(R.id.button_register);
         loginBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -107,9 +142,24 @@ public class RegisterFragment extends BaseFragment {
         public void onFocusChange(View v, boolean hasFocus) {
 
             if (!hasFocus) {
-                ((MainActivity)getActivity()).hideKeyboard(v);
+                hideKeyboard(v);
                 checkInput(v);
+            }else {
+                toggleCoinTokenListView();
             }
+
+        }
+    };
+
+    private View.OnTouchListener mViewTouchListener = new View.OnTouchListener(){
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            toggleCoinTokenListView();
+
+
+            return true;
         }
     };
 
@@ -175,7 +225,22 @@ public class RegisterFragment extends BaseFragment {
         return false;
     }
 
+    public void loadCoinTokenArray(){
+        if (Setting.getInstance().mCoinTokenArray.size() > 0){
+            return;
+        }
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mAccountManager.getSupportedCointokenArray(Setting.getInstance().mCoinTokenArray);
+
+                for (int i=0; i<Setting.getInstance().mCoinTokenArray.size(); i++){
+                    Log.i(TAG, Setting.getInstance().mCoinTokenArray.get(i).toString());
+                }
+            }
+        }).start();
+    }
 
     public void onRegisterButtonClick(View v)
     {
@@ -210,64 +275,70 @@ public class RegisterFragment extends BaseFragment {
             @Override
             public void run() {
                 Pair<Integer, String> ret = mAccountManager.registerUserAccount(account, "DCT", "SPC");
+                CommonProgressDialog.dismiss();
                 if (ret.first == SecuXServerRequestHandler.SecuXRequestOK) {
-
                     account.mCoinAccountArr.clear();
-
-                    ret = mAccountManager.loginUserAccount(account);
-                    if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                CommonProgressDialog.dismiss();
-                                Toast toast = Toast.makeText(getActivity(), "Login failed! Invalid email account or password", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER,0,0);
-                                toast.show();
-                            }
-                        });
-
-                    }
-
-                    ret = mAccountManager.getCoinAccountList(account);
-                    if (ret.first!= SecuXServerRequestHandler.SecuXRequestOK){
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                CommonProgressDialog.dismiss();
-                                Toast toast = Toast.makeText(getActivity(), "Login failed! Get coin token account list failed!", Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.CENTER,0,0);
-                                toast.show();
-                            }
-                        });
-                    }
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CommonProgressDialog.dismiss();
-
-                            Setting.getInstance().mAccount = account;
-                            Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
-                            startActivity(newIntent);
-
-                        }
-                    });
-
+                    login(account);
                 } else {
                     final String error = ret.second;
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CommonProgressDialog.dismiss();
-                            Toast toast = Toast.makeText(getActivity(), "Register failed! Error: " + error, Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                        }
-                    });
-
+                    showMessageInMain("Register failed! Error: " + error);
                 }
             }
         }).start();
+    }
+
+    public void toggleCoinTokenListView(){
+
+        hideKeyboard(this.mListViewCoinToken);
+
+        int listHeight = 5*160;
+        if (Setting.getInstance().mCoinTokenArray.size() * 60 < listHeight)
+            listHeight = Setting.getInstance().mCoinTokenArray.size() * 160;
+
+        ViewGroup.LayoutParams params = mListViewCoinToken.getLayoutParams();
+        params.height = listHeight;
+
+        /*
+        ImageView imgview = getActivity().findViewById(R.id.imageView_cointokensel_downarrow);
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(imgview, "rotation", 180f, 0f);
+        rotate.setDuration(500);
+        rotate.start();
+
+         */
+
+        ExpandCollapseAnimation animation = null;
+        if (mShowCoinTokenSelList){
+            animation = new ExpandCollapseAnimation(mListViewCoinToken, 500, 1);
+            mShowCoinTokenSelList = false;
+        }else {
+            animation = new ExpandCollapseAnimation(mListViewCoinToken, 500, 0);
+            mShowCoinTokenSelList = true;
+
+
+        }
+        mListViewCoinToken.startAnimation(animation);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (mShowCoinTokenSelList){
+                    final SupportedCoinTokeListAdapter adapter = new SupportedCoinTokeListAdapter(getActivity());
+                    mListViewCoinToken.setAdapter(adapter);
+                }else{
+                    mListViewCoinToken.setAdapter(null);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
 
 
     }
