@@ -19,9 +19,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-feature
-        android:name="android.hardware.nfc"
-        android:required="true" />
+    <uses-feature android:name="android.hardware.nfc"/>
     <uses-feature android:name="android.hardware.camera" />
 
     <application
