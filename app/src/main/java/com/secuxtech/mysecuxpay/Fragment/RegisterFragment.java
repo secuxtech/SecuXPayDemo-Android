@@ -144,7 +144,8 @@ public class RegisterFragment extends BaseFragment {
             if (!hasFocus) {
                 hideKeyboard(v);
                 checkInput(v);
-            }else {
+            }else if (mShowCoinTokenSelList){
+                mListViewCoinToken.setVisibility(View.INVISIBLE);
                 toggleCoinTokenListView();
             }
 
@@ -156,7 +157,10 @@ public class RegisterFragment extends BaseFragment {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
 
-            toggleCoinTokenListView();
+            if (mShowCoinTokenSelList) {
+                mListViewCoinToken.setVisibility(View.INVISIBLE);
+                toggleCoinTokenListView();
+            }
 
 
             return true;
