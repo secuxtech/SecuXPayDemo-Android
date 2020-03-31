@@ -53,7 +53,7 @@ public class BaseFragment  extends Fragment {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public void login(SecuXUserAccount account){
+    public void login(final SecuXUserAccount account){
         CommonProgressDialog.showProgressDialog(getActivity(), "Login...");
         new Thread(new Runnable() {
             @Override
