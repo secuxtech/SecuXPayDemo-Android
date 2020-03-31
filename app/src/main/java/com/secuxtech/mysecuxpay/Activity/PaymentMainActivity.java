@@ -78,14 +78,15 @@ public class PaymentMainActivity extends BaseActivity {
             toast.show();
             //finish();
             //return;
-        }
+        }else {
 
-        if (!mNfcAdapter.isEnabled()) {
-            Toast toast = Toast.makeText(mContext, "Please turn on NFC!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER,0,0);
-            toast.show();
-            //finish();
-            //return;
+            if (!mNfcAdapter.isEnabled()) {
+                Toast toast = Toast.makeText(mContext, "Please turn on NFC!", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+                //finish();
+                //return;
+            }
         }
 
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -119,13 +120,14 @@ public class PaymentMainActivity extends BaseActivity {
 
         }
 
-        if (BuildConfig.DEBUG && Setting.getInstance().mTestModel){
+        if (BuildConfig.DEBUG && Setting.getInstance().mTestModel) {
             return;
         }
 
-        mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        if (mNfcAdapter != null) {
+            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        }
     }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
