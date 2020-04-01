@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.secuxtech.mysecuxpay.R;
+
+import javax.xml.parsers.FactoryConfigurationError;
 
 public class CommonProgressDialog {
     private static AlertDialog mAlertDialog;
@@ -61,9 +64,13 @@ public class CommonProgressDialog {
     }
 
     public static void dismiss() {
+
         if (mAlertDialog != null && mAlertDialog.isShowing()) {
             mAlertDialog.dismiss();
             mAlertDialog = null;
         }
     }
+
+
+
 }
