@@ -28,8 +28,11 @@ public class TokenTransferDetailsActivity extends BaseActivity {
 
         CommonProgressDialog.showProgressDialog(mContext, "Loading...");
         final WebView detailWebView = findViewById(R.id.webView_transfer_details);
-        detailWebView.getSettings().setBuiltInZoomControls(true);
+        //detailWebView.getSettings().setBuiltInZoomControls(true);
         detailWebView.getSettings().setJavaScriptEnabled(true);
+        detailWebView.getSettings().setLoadWithOverviewMode(true);
+        detailWebView.getSettings().setUseWideViewPort(true);
+        detailWebView.setInitialScale(1);
         detailWebView.setWebViewClient(new WebViewClient(){
 
             @Override
