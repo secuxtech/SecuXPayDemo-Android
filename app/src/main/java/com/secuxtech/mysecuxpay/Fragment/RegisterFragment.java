@@ -144,7 +144,9 @@ public class RegisterFragment extends BaseFragment {
             if (!hasFocus) {
                 hideKeyboard(v);
                 checkInput(v);
-            }else if (mShowCoinTokenSelList){
+            }
+
+            if (mShowCoinTokenSelList){
                 mListViewCoinToken.setVisibility(View.INVISIBLE);
                 toggleCoinTokenListView();
             }
@@ -279,14 +281,21 @@ public class RegisterFragment extends BaseFragment {
             @Override
             public void run() {
                 Pair<Integer, String> ret = mAccountManager.registerUserAccount(account, "DCT", "SPC");
-                CommonProgressDialog.dismiss();
-                if (ret.first == SecuXServerRequestHandler.SecuXRequestOK) {
-                    account.mCoinAccountArr.clear();
-                    login(account);
-                } else {
-                    final String error = ret.second;
-                    showMessageInMain("Register failed! Error: " + error);
-                }
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        CommonProgressDialog.dismiss();
+                        if (ret.first == SecuXServerRequestHandler.SecuXRequestOK) {
+                            account.mCoinAccountArr.clear();
+                            login(account);
+                        } else {
+                            final String error = ret.second;
+                            showMessageInMain("Register failed! Error: " + error);
+                        }
+                    }
+                });
+
             }
         }).start();
     }
@@ -312,12 +321,13 @@ public class RegisterFragment extends BaseFragment {
 
         ExpandCollapseAnimation animation = null;
         if (mShowCoinTokenSelList){
+            Log.i(TAG, "close list");
             animation = new ExpandCollapseAnimation(mListViewCoinToken, 500, 1);
             mShowCoinTokenSelList = false;
         }else {
+            Log.i(TAG, "show list");
             animation = new ExpandCollapseAnimation(mListViewCoinToken, 500, 0);
             mShowCoinTokenSelList = true;
-
 
         }
         mListViewCoinToken.startAnimation(animation);
