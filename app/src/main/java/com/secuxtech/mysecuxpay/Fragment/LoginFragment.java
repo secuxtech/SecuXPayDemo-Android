@@ -38,6 +38,8 @@ import com.secuxtech.paymentkit.SecuXAccountManager;
 import com.secuxtech.paymentkit.SecuXServerRequestHandler;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
+import java.util.Set;
+
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 /**
@@ -85,7 +87,34 @@ public class LoginFragment extends BaseFragment {
             }
         });
 
-        if (Setting.getInstance().mAccount!=null){
+        TextView idloginBtn = view.findViewById(R.id.textView_login_bioid);
+        idloginBtn.setOnClickListener(new TextView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new BiometricManager.BiometricBuilder(getActivity())
+                                    .setTitle("Login")
+                                    .setSubtitle("MySecuXPay")
+                                    .setDescription("Auto login with your biometric ID")
+                                    .setNegativeButtonText("Cancel")
+                                    .build()
+                                    .authenticate(mBiometricCallback);
+                        }
+                    });
+                }catch (Exception e){
+
+                }
+            }
+        });
+
+        Setting sss = Setting.getInstance();
+        if (Setting.getInstance().mAccount == null) {
+            Setting.getInstance().loadSettings(getActivity());
+        }
+        if (!Setting.getInstance().mUserLogout && Setting.getInstance().mUserAccountName!="" && Setting.getInstance().mUserAccountPwd!=""){
             try {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -103,6 +132,8 @@ public class LoginFragment extends BaseFragment {
 
             }
         }
+
+
 
         return view;
     }
@@ -204,8 +235,8 @@ public class LoginFragment extends BaseFragment {
 
         @Override
         public void onAuthenticationSuccessful() {
-            mEdittextEmail.setText(Setting.getInstance().mAccount.mAccountName);
-            mEdittextPwd.setText(Setting.getInstance().mAccount.mPassword);
+            mEdittextEmail.setText(Setting.getInstance().mUserAccountName);
+            mEdittextPwd.setText(Setting.getInstance().mUserAccountPwd);
             onLoginButtonClick(mButtonLogin);
         }
 
@@ -219,6 +250,28 @@ public class LoginFragment extends BaseFragment {
 
         }
     };
+
+    public void onUseTouchIDFaceIDLoginClick(View v){
+        if (Setting.getInstance().mUserAccountName!="" && Setting.getInstance().mUserAccountPwd!=""){
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new BiometricManager.BiometricBuilder(getActivity())
+                                .setTitle("Login")
+                                .setSubtitle("MySecuXPay")
+                                .setDescription("Auto login with your biometric ID")
+                                .setNegativeButtonText("Cancel")
+                                .build()
+                                .authenticate(mBiometricCallback);
+                    }
+                });
+            }catch (Exception e){
+
+            }
+        }
+    }
+
 
     public void onLoginButtonClick(View v)
     {
