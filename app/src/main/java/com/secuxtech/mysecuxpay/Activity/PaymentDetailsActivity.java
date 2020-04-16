@@ -143,7 +143,9 @@ public class PaymentDetailsActivity extends BaseActivity {
         TextView textviewAmount = findViewById(R.id.editText_paymentinput_amount);
         if (Double.valueOf(mAmount) > 0.0){
             textviewAmount.setText(mAmount);
+            textviewAmount.setFocusable(false);
         }else{
+            textviewAmount.setFocusable(true);
             textviewName.requestFocus();
         }
 
@@ -371,11 +373,20 @@ public class PaymentDetailsActivity extends BaseActivity {
         @Override
         public void onBiometricAuthenticationNotSupported() {
             Log.e(TAG, "onBiometricAuthenticationNotSupported");
+
+            KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
+            // get the intent to prompt the user
+            Intent intent = km.createConfirmDeviceCredentialIntent("MyEvPay", "Enter your password to pay");
+
+            // launch the intent
+            startActivityForResult(intent, REQUEST_PWD_PROMPT);
         }
 
         @Override
         public void onBiometricAuthenticationNotAvailable() {
             Log.e(TAG, "onBiometricAuthenticationNotAvailable");
+
+
         }
 
         @Override
