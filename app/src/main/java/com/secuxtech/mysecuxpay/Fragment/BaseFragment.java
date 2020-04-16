@@ -73,7 +73,11 @@ public class BaseFragment  extends Fragment {
                     public void run() {
                         CommonProgressDialog.dismiss();
 
+                        Setting.getInstance().mUserLogout = false;
                         Setting.getInstance().mAccount = account;
+                        Setting.getInstance().mUserAccountName = account.mAccountName;
+                        Setting.getInstance().mUserAccountPwd = account.mPassword;
+                        Setting.getInstance().saveSettings(getActivity());
                         Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
                         startActivity(newIntent);
 
