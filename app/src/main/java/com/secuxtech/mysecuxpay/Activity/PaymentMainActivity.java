@@ -31,6 +31,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.secuxtech.mysecuxpay.BuildConfig;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXCoinAccount;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXServerRequestHandler;
@@ -192,7 +193,9 @@ public class PaymentMainActivity extends BaseActivity {
                 Log.i(TAG, text);
 
                 if (text.contains("{") && text.contains("}")) {
+                    showProgressInMain("Parsing...");
                     handlePaymentInfo(text);
+                    hideProgressInMain();
                     return;
                 }
             }
@@ -358,7 +361,10 @@ public class PaymentMainActivity extends BaseActivity {
             final String scanContent = scanningResult.getContents();
             if (scanContent.length() > 0)
             {
+                showProgressInMain("Parsing...");
                 handlePaymentInfo(scanContent);
+                hideProgressInMain();
+
                 return;
             }
 
