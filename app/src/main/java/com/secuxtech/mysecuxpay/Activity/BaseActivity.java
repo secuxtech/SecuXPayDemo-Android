@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.secuxtech.mysecuxpay.R;
+import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -90,5 +91,23 @@ public class BaseActivity extends AppCompatActivity {
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void showProgressInMain(String info){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CommonProgressDialog.showProgressDialog(mContext, info);
+            }
+        });
+    }
+
+    public void hideProgressInMain(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CommonProgressDialog.dismiss();
+            }
+        });
     }
 }
