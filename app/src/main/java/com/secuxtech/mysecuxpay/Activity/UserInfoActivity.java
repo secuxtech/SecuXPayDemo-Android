@@ -60,9 +60,7 @@ public class UserInfoActivity extends BaseActivity {
                     startActivity(i);
 
                 }else if (position==2){
-
-                    Setting.getInstance().mAccount = null;
-
+                    Setting.getInstance().mUserLogout = true;
                     Intent i = new Intent(UserInfoActivity.this, MainActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
