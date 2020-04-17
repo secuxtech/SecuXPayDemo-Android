@@ -280,7 +280,7 @@ public class RegisterFragment extends BaseFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Pair<Integer, String> ret = mAccountManager.registerUserAccount(account, "DCT", "SPC");
+                final Pair<Integer, String> ret = mAccountManager.registerUserAccount(account, "DCT", "SPC");
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

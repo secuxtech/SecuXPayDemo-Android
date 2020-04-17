@@ -1,25 +1,18 @@
 package com.secuxtech.mysecuxpay.Activity;
 
-import android.Manifest;
-import android.accounts.AccountManager;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 
-import android.hardware.biometrics.BiometricPrompt;
-import android.hardware.fingerprint.FingerprintManager;
-import android.media.AudioManager;
+
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.media.ToneGenerator;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -29,7 +22,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -43,8 +36,7 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.an.biometric.BiometricCallback;
-import com.an.biometric.BiometricManager;
+
 import com.secuxtech.mysecuxpay.Adapter.CoinAccountListAdapter;
 import com.secuxtech.mysecuxpay.BuildConfig;
 import com.secuxtech.mysecuxpay.Interface.AdapterItemClickListener;
@@ -54,6 +46,8 @@ import com.secuxtech.mysecuxpay.R;
 import com.secuxtech.mysecuxpay.Utility.AccountUtil;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 
+import com.secuxtech.mysecuxpay.Utility.biometric.BiometricCallback;
+import com.secuxtech.mysecuxpay.Utility.biometric.BiometricManager;
 import com.secuxtech.paymentkit.SecuXAccountManager;
 import com.secuxtech.paymentkit.SecuXCoinAccount;
 import com.secuxtech.paymentkit.SecuXCoinTokenBalance;
@@ -61,20 +55,15 @@ import com.secuxtech.paymentkit.SecuXPaymentHistory;
 import com.secuxtech.paymentkit.SecuXPaymentManager;
 import com.secuxtech.paymentkit.SecuXPaymentManagerCallback;
 import com.secuxtech.paymentkit.SecuXServerRequestHandler;
-import com.secuxtech.paymentkit.SecuXTransferResult;
-import com.secuxtech.paymentkit.SecuXUserAccount;
+
 
 import org.json.JSONObject;
 
-import java.security.Signature;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import static androidx.arch.core.executor.ArchTaskExecutor.getMainThreadExecutor;
 
 public class PaymentDetailsActivity extends BaseActivity {
 
@@ -108,7 +97,8 @@ public class PaymentDetailsActivity extends BaseActivity {
     private SecuXCoinAccount mCoinAccount = null;
     private SecuXCoinTokenBalance mTokenBalance = null;
 
-    private Timer mMonitorPaymentTimer = new Timer();
+    //private Timer mMonitorPaymentTimer = new Timer();
+    private boolean mAuthenicationScreenShow = false;
 
     private Dialog mAccountSelDialog;
     private boolean mShowAccountSel = false;
@@ -368,46 +358,37 @@ public class PaymentDetailsActivity extends BaseActivity {
         @Override
         public void onSdkVersionNotSupported() {
             Log.e(TAG, "onSdkVersionNotSupported");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationNotSupported() {
             Log.e(TAG, "onBiometricAuthenticationNotSupported");
-
-            KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
-            // get the intent to prompt the user
-            Intent intent = km.createConfirmDeviceCredentialIntent("MyEvPay", "Enter your password to pay");
-
-            // launch the intent
-            startActivityForResult(intent, REQUEST_PWD_PROMPT);
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationNotAvailable() {
             Log.e(TAG, "onBiometricAuthenticationNotAvailable");
-
-
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationPermissionNotGranted() {
             Log.e(TAG, "onBiometricAuthenticationPermissionNotGranted");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationInternalError(String error) {
             Log.e(TAG, "onBiometricAuthenticationInternalError " + error);
+            showAuthenticationScreen();
         }
 
         @Override
         public void onAuthenticationFailed() {
-            KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
-            // get the intent to prompt the user
-            Intent intent = km.createConfirmDeviceCredentialIntent("MyEvPay", "Enter your password to pay");
-
-            // launch the intent
-            startActivityForResult(intent, REQUEST_PWD_PROMPT);
-
+            Log.e(TAG, "onAuthenticationFailed ");
+            showAuthenticationScreen();
         }
 
         @Override
@@ -427,9 +408,25 @@ public class PaymentDetailsActivity extends BaseActivity {
 
         @Override
         public void onAuthenticationError(int errorCode, CharSequence errString) {
-
+            Log.e(TAG, "onAuthenticationError " + errString);
+            showAuthenticationScreen();
         }
     };
+
+    private void showAuthenticationScreen(){
+        if (mAuthenicationScreenShow)
+            return;
+
+
+        KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
+        // get the intent to prompt the user
+        Intent intent = km.createConfirmDeviceCredentialIntent("SecuX EvPay", "Enter your password to pay");
+        // launch the intent
+        if (intent != null) {
+            startActivityForResult(intent, REQUEST_PWD_PROMPT);
+            mAuthenicationScreenShow = true;
+        }
+    }
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data){
@@ -444,6 +441,7 @@ public class PaymentDetailsActivity extends BaseActivity {
                 // they got it wrong/cancelled
             }
         }
+        mAuthenicationScreenShow = false;
     }
 
     public void onClickAccount(View v){
@@ -521,7 +519,7 @@ public class PaymentDetailsActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mMonitorPaymentTimer.cancel();
+                    //mMonitorPaymentTimer.cancel();
                     CommonProgressDialog.dismiss();
 
                     Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);

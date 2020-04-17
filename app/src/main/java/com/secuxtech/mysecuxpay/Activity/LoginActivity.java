@@ -20,8 +20,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
-import com.an.biometric.BiometricCallback;
-import com.an.biometric.BiometricManager;
+//import com.an.biometric.BiometricCallback;
+//import com.an.biometric.BiometricManager;
 import com.secuxtech.mysecuxpay.Fragment.LoginFragment;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;

@@ -94,10 +94,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void showProgressInMain(String info){
+        final String msgInfo = info;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                CommonProgressDialog.showProgressDialog(mContext, info);
+                CommonProgressDialog.showProgressDialog(mContext, msgInfo);
             }
         });
     }

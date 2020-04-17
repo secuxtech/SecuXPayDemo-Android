@@ -6,4 +6,6 @@
     <string name="account_operation_send">Send</string>
     <string name="account_operation_receive">Receive</string>
     <string name="main_nav_userinfo">User</string>
+
+    <string name="biometric_failed">Fingerprint not recognized</string>
 </resources>

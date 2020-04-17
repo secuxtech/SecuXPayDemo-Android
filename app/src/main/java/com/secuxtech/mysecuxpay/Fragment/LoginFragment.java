@@ -4,6 +4,8 @@ package com.secuxtech.mysecuxpay.Fragment;
 import android.annotation.TargetApi;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.biometrics.BiometricPrompt;
@@ -27,20 +29,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.an.biometric.BiometricCallback;
-import com.an.biometric.BiometricManager;
-import com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity;
-
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
-import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
-import com.secuxtech.paymentkit.SecuXAccountManager;
-import com.secuxtech.paymentkit.SecuXServerRequestHandler;
+
+import com.secuxtech.mysecuxpay.Utility.biometric.BiometricCallback;
+import com.secuxtech.mysecuxpay.Utility.biometric.BiometricManager;
 import com.secuxtech.paymentkit.SecuXUserAccount;
 
-import java.util.Set;
 
+
+import static android.app.Activity.RESULT_OK;
 import static androidx.constraintlayout.widget.Constraints.TAG;
+import static com.secuxtech.mysecuxpay.Activity.PaymentDetailsActivity.REQUEST_PWD_PROMPT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +53,8 @@ public class LoginFragment extends BaseFragment {
     private TextView mTextViewInvalidEmail;
     private TextView mTextViewInvalidPwd;
     private Button mButtonLogin;
+
+    private boolean mAuthenicationScreenShow = false;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -110,7 +112,7 @@ public class LoginFragment extends BaseFragment {
             }
         });
 
-        Setting sss = Setting.getInstance();
+        //Setting sss = Setting.getInstance();
         if (Setting.getInstance().mAccount == null) {
             Setting.getInstance().loadSettings(getActivity());
         }
@@ -126,14 +128,13 @@ public class LoginFragment extends BaseFragment {
                                 .setNegativeButtonText("Cancel")
                                 .build()
                                 .authenticate(mBiometricCallback);
+
                     }
                 });
             }catch (Exception e){
 
             }
         }
-
-
 
         return view;
     }
@@ -200,41 +201,48 @@ public class LoginFragment extends BaseFragment {
     private BiometricCallback mBiometricCallback = new BiometricCallback() {
         @Override
         public void onSdkVersionNotSupported() {
-
+            Log.i(TAG, "onSdkVersionNotSupported");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationNotSupported() {
-
+            Log.i(TAG, "onBiometricAuthenticationNotSupported");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationNotAvailable() {
-
+            Log.i(TAG, "onBiometricAuthenticationNotAvailable");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationPermissionNotGranted() {
-
+            Log.i(TAG, "onBiometricAuthenticationPermissionNotGranted");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationInternalError(String error) {
-
+            Log.i(TAG, "onBiometricAuthenticationInternalError");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onAuthenticationFailed() {
-
+            Log.i(TAG, "onAuthenticationFailed");
+            showAuthenticationScreen();
         }
 
         @Override
         public void onAuthenticationCancelled() {
-
+            Log.i(TAG, "onAuthenticationCancelled");
         }
 
         @Override
         public void onAuthenticationSuccessful() {
+            Log.i(TAG, "onAuthenticationSuccessful");
             mEdittextEmail.setText(Setting.getInstance().mUserAccountName);
             mEdittextPwd.setText(Setting.getInstance().mUserAccountPwd);
             onLoginButtonClick(mButtonLogin);
@@ -242,14 +250,48 @@ public class LoginFragment extends BaseFragment {
 
         @Override
         public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-
+            Log.i(TAG, "onAuthenticationHelp");
         }
 
         @Override
         public void onAuthenticationError(int errorCode, CharSequence errString) {
-
+            Log.i(TAG, "onAuthenticationError");
+            showAuthenticationScreen();
         }
     };
+
+    private void showAuthenticationScreen(){
+        if (mAuthenicationScreenShow){
+            return;
+        }
+
+        KeyguardManager km = (KeyguardManager) getActivity().getSystemService(Context.KEYGUARD_SERVICE);
+        // get the intent to prompt the user
+        Intent intent = km.createConfirmDeviceCredentialIntent("SecuX EvPay", "Enter your password to login");
+        // launch the intent
+        if (intent!=null) {
+            startActivityForResult(intent, REQUEST_PWD_PROMPT);
+            mAuthenicationScreenShow = true;
+        }
+    }
+
+    @Override
+    public void onActivityResult (int requestCode, int resultCode, Intent data){
+        super.onActivityResult(resultCode, resultCode, data);
+        // see if this is being called from our password request..?
+        if (requestCode == REQUEST_PWD_PROMPT) {
+            // ..it is. Did the user get the password right?
+            if (resultCode == RESULT_OK) {
+                // they got it right
+                mEdittextEmail.setText(Setting.getInstance().mUserAccountName);
+                mEdittextPwd.setText(Setting.getInstance().mUserAccountPwd);
+                onLoginButtonClick(mButtonLogin);
+            } else {
+                // they got it wrong/cancelled
+            }
+        }
+        mAuthenicationScreenShow = false;
+    }
 
     public void onUseTouchIDFaceIDLoginClick(View v){
         if (Setting.getInstance().mUserAccountName!="" && Setting.getInstance().mUserAccountPwd!=""){
