@@ -1,4 +1,4 @@
-# SecuXPayDemo-Android
+# SecuX EvPay
 
 SecuX EvPay is an Android Demo APP, which uses the 'secux-paymentkit'. 
 
