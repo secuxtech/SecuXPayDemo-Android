@@ -1,6 +1,6 @@
 # SecuXPayDemo-Android
 
-MySecuXPay is an Android Demo APP, which uses the 'secux-paymentkit'. 
+SecuX EvPay is an Android Demo APP, which uses the 'secux-paymentkit'. 
 
 
 ## Screenshot
