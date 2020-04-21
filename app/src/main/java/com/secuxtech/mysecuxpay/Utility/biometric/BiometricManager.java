@@ -102,6 +102,7 @@ public class BiometricManager extends BiometricManagerV23 {
                 .setNegativeButton(negativeButtonText, context.getMainExecutor(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        dismissDialog();
                         biometricCallback.onAuthenticationCancelled();
                     }
                 })
