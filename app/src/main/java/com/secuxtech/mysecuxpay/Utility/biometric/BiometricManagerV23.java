@@ -107,7 +107,7 @@ public class BiometricManagerV23 {
 
 
 
-    private void dismissDialog() {
+    public void dismissDialog() {
         if(biometricDialogV23 != null) {
             biometricDialogV23.dismiss();
         }
