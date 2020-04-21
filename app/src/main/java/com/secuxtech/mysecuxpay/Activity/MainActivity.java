@@ -1,13 +1,8 @@
 package com.secuxtech.mysecuxpay.Activity;
 
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
+
 import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,18 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ListView;
 
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Constraints;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import androidx.transition.Fade;
-import androidx.transition.Transition;
-import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -36,7 +25,7 @@ import com.secuxtech.mysecuxpay.Fragment.LoginFragment;
 import com.secuxtech.mysecuxpay.Fragment.RegisterFragment;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.R;
-import com.secuxtech.mysecuxpay.Utility.ExpandCollapseAnimation;
+
 
 
 public class MainActivity extends BaseActivity {
@@ -140,8 +129,6 @@ public class MainActivity extends BaseActivity {
         mViewPager = findViewById(R.id.viewPage_main_tab);
         mViewPager.addOnPageChangeListener(mPageChangeListener);
         mViewPager.setAdapter(new TheFragmentAdapter(getSupportFragmentManager()));
-
-
 
     }
 
