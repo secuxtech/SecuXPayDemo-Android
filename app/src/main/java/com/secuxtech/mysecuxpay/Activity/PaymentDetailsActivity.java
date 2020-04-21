@@ -64,6 +64,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 
 public class PaymentDetailsActivity extends BaseActivity {
 
@@ -104,6 +106,9 @@ public class PaymentDetailsActivity extends BaseActivity {
     private boolean mShowAccountSel = false;
 
     private Button mButtonPay;
+
+    private BiometricManager mBioManager = null;
+    private int mAuthenticationRetryCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -321,13 +326,14 @@ public class PaymentDetailsActivity extends BaseActivity {
 
 
         try{
-            new BiometricManager.BiometricBuilder(this)
+            mBioManager = new BiometricManager.BiometricBuilder(this)
                     .setTitle("Pay to " + mStoreName)
                     .setSubtitle("MySecuXPay")
                     .setDescription("Allow payment with your biometric ID")
                     .setNegativeButtonText("Cancel")
-                    .build()
-                    .authenticate(mBiometricCallback);
+                    .build();
+
+            mBioManager.authenticate(mBiometricCallback);
         }catch (Exception e){
             Log.i(TAG, e.getMessage());
             doPayment();
@@ -357,66 +363,97 @@ public class PaymentDetailsActivity extends BaseActivity {
     private BiometricCallback mBiometricCallback = new BiometricCallback() {
         @Override
         public void onSdkVersionNotSupported() {
-            Log.e(TAG, "onSdkVersionNotSupported");
+            Log.i(TAG, "onSdkVersionNotSupported");
             showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationNotSupported() {
-            Log.e(TAG, "onBiometricAuthenticationNotSupported");
+            Log.i(TAG, "onBiometricAuthenticationNotSupported");
             showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationNotAvailable() {
-            Log.e(TAG, "onBiometricAuthenticationNotAvailable");
+            Log.i(TAG, "onBiometricAuthenticationNotAvailable");
             showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationPermissionNotGranted() {
-            Log.e(TAG, "onBiometricAuthenticationPermissionNotGranted");
+            Log.i(TAG, "onBiometricAuthenticationPermissionNotGranted");
             showAuthenticationScreen();
         }
 
         @Override
         public void onBiometricAuthenticationInternalError(String error) {
-            Log.e(TAG, "onBiometricAuthenticationInternalError " + error);
+            Log.i(TAG, "onBiometricAuthenticationInternalError");
             showAuthenticationScreen();
         }
 
         @Override
         public void onAuthenticationFailed() {
-            Log.e(TAG, "onAuthenticationFailed ");
-            showAuthenticationScreen();
+            Log.i(TAG, "onAuthenticationFailed");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mBioManager!=null){
+                        mBioManager.dismissDialog();
+                    }
+                }
+            });
+
+            if (mAuthenticationRetryCount++ < 1){
+                mBioManager.authenticate(mBiometricCallback);
+            }else {
+                showAuthenticationScreen();
+            }
         }
 
         @Override
         public void onAuthenticationCancelled() {
-
+            Log.i(TAG, "onAuthenticationCancelled");
         }
 
         @Override
         public void onAuthenticationSuccessful() {
+            Log.i(TAG, "onAuthenticationSuccessful");
             doPayment();
         }
 
         @Override
         public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-
+            Log.i(TAG, "onAuthenticationHelp");
         }
 
         @Override
         public void onAuthenticationError(int errorCode, CharSequence errString) {
-            Log.e(TAG, "onAuthenticationError " + errString);
-            showAuthenticationScreen();
+            Log.i(TAG, "onAuthenticationError " + errorCode + " " + errString);
+
+            if (errorCode!=5) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mBioManager != null) {
+                            mBioManager.dismissDialog();
+                        }
+                    }
+                });
+
+                if (mAuthenticationRetryCount++ < 3) {
+                    mBioManager.authenticate(mBiometricCallback);
+                } else {
+                    showAuthenticationScreen();
+                }
+            }
         }
     };
 
     private void showAuthenticationScreen(){
         if (mAuthenicationScreenShow)
             return;
-
 
         KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         // get the intent to prompt the user
@@ -529,8 +566,6 @@ public class PaymentDetailsActivity extends BaseActivity {
                         //deprecated in API 26
                         v.vibrate(500);
                     }
-
-
 
                     MediaPlayer mediaPlayer = new MediaPlayer();
                     AssetFileDescriptor afd;
