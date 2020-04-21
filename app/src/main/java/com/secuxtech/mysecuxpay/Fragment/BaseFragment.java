@@ -50,7 +50,9 @@ public class BaseFragment  extends Fragment {
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (inputMethodManager!=null) {
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public void login(final SecuXUserAccount account){
