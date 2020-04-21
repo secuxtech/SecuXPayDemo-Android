@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="10sp"
-        android:layout_marginTop="95sp"
+        android:layout_marginTop="50sp"
 
         android:layout_marginRight="10sp"
         android:layout_marginBottom="20sp"
@@ -59,7 +59,7 @@
         android:layout_height="match_parent"
 
         android:layout_marginLeft="10sp"
-        android:layout_marginTop="100sp"
+        android:layout_marginTop="20sp"
         android:layout_marginRight="10sp"
 
         app:layout_constraintLeft_toLeftOf="parent"
