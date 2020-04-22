@@ -105,6 +105,7 @@
         app:layout_constraintRight_toRightOf="parent"/>
 
     <View
+        android:id="@+id/view_login_underline"
         android:layout_width="200dp"
         android:layout_height="1dp"
         android:background="#FFFFFF"
