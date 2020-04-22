@@ -17,6 +17,7 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -43,8 +44,9 @@ public class PaymentMainActivity extends BaseActivity {
     private final Context mContext = this;
     private IntentIntegrator mScanIntegrator;
 
-    private NfcAdapter mNfcAdapter;
-    private PendingIntent mPendingIntent = null;
+    private NfcAdapter      mNfcAdapter;
+    //private PendingIntent   mPendingIntent = null;
+    //private boolean         mProcessNFCTag = false;
 
     SecuXPaymentManager mPaymentManager = new SecuXPaymentManager();
 
@@ -106,8 +108,12 @@ public class PaymentMainActivity extends BaseActivity {
 
         } else {
             // Bluetooth is enabled
+            if (Setting.getInstance().mPaymentNFCInfo.length()>0){
+                handlePaymentInfo(Setting.getInstance().mPaymentNFCInfo);
+            }else {
+                processIntent(getIntent());
+            }
         }
-
 
     }
 
@@ -115,6 +121,7 @@ public class PaymentMainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
 
+        /*
         if (mPendingIntent == null) {
             mPendingIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -128,7 +135,17 @@ public class PaymentMainActivity extends BaseActivity {
         if (mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         }
+
+         */
     }
+
+    public void onPause() {
+        super.onPause();
+        //if (mNfcAdapter != null) {
+        //    mNfcAdapter.disableForegroundDispatch(this);
+        //}
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -162,7 +179,14 @@ public class PaymentMainActivity extends BaseActivity {
     };
 
     private void processIntent(final Intent intent) {
+        Log.i(TAG, "processIntent");
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        if (tag==null){
+            Log.i(TAG, "Empty tag process abort!");
+            return;
+        }
+
+        //mProcessNFCTag = true;
         Ndef ndef = Ndef.get(tag);
 
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -174,6 +198,43 @@ public class PaymentMainActivity extends BaseActivity {
             v.vibrate(500);
         }
 
+        Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        if (rawMessages != null) {
+            NdefMessage[] messages = new NdefMessage[rawMessages.length];
+            for (int i = 0; i < rawMessages.length; i++) {
+                messages[i] = (NdefMessage) rawMessages[i];
+                //NdefRecord[] record = messages[i].getRecords();
+
+                String amount="", devid="", cointype="", token="";
+                for (final NdefRecord record : messages[i].getRecords()) {
+                    byte[] payload = record.getPayload();
+                    String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
+                    int languageCodeLength = payload[0] & 0077;
+
+                    try {
+                        String languageCode = new String(payload, 1, languageCodeLength, "US-ASCII");
+                        String text = new String(payload, languageCodeLength + 1,
+                                payload.length - languageCodeLength - 1, textEncoding);
+
+                        //{"amount":"11.5", "coinType":"DCT", "token":"SPC","deviceIDhash":"04793D374185C2167A420D250FFF93F05156350C"}
+
+                        Log.i(TAG, text);
+
+                        if (text.contains("{") && text.contains("}")) {
+                            showProgressInMain("Parsing...");
+                            Setting.getInstance().mPaymentNFCInfo = text;
+                            handlePaymentInfo(text);
+                            hideProgressInMain();
+                            return;
+                        }
+                    }catch (Exception e){
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+            }
+        }
+
+        /*
         try {
             ndef.close();
             ndef.connect();
@@ -194,6 +255,7 @@ public class PaymentMainActivity extends BaseActivity {
 
                 if (text.contains("{") && text.contains("}")) {
                     showProgressInMain("Parsing...");
+                    Setting.getInstance().mPaymentNFCInfo = text;
                     handlePaymentInfo(text);
                     hideProgressInMain();
                     return;
@@ -201,7 +263,10 @@ public class PaymentMainActivity extends BaseActivity {
             }
 
         } catch (Exception e) {
-            //Log.e(TAG, e.getLocalizedMessage());
+            Log.e(TAG, e.getMessage());
+
+            //mProcessNFCTag = false;
+
         } finally {
             try {
                 ndef.close();
@@ -210,6 +275,8 @@ public class PaymentMainActivity extends BaseActivity {
             }
         }
 
+
+         */
     }
 
     public void onScanQRCodeButtonClick(View v)
@@ -244,36 +311,25 @@ public class PaymentMainActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 Pair<Integer, String> ret = mPaymentManager.getDeviceInfo(payinfo);
                 if (ret.first== SecuXServerRequestHandler.SecuXRequestUnauthorized){
-                    showMessageInMain("Login timeout! Please login again!");
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent newIntent = new Intent(mContext, LoginActivity.class);
-                            startActivity(newIntent);
-                        }
-                    });
-
+                    showLoginWndInMain();
                     return;
 
                 }else if (ret.first==SecuXServerRequestHandler.SecuXRequestFailed){
-                    showMessageInMain("Invalid payment information!");
+
 
                     if (ret.second.contains("No token")){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent newIntent = new Intent(mContext, LoginActivity.class);
-                                startActivity(newIntent);
-                            }
-                        });
+                        showLoginWndInMain();
+                        return;
                     }
+
+                    showMessageInMain("Invalid payment information!");
+                    Setting.getInstance().mPaymentNFCInfo = "";
                     return;
                 }
 
+                Setting.getInstance().mPaymentNFCInfo = "";
                 try{
                     String amount = "0", coinType = "DCT", token = "SPC";
                     final String payInfoReply = ret.second;
@@ -348,7 +404,6 @@ public class PaymentMainActivity extends BaseActivity {
 
             }
         }).start();
-
 
     }
 
