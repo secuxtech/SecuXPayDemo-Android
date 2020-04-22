@@ -1,6 +1,7 @@
 package com.secuxtech.mysecuxpay.Activity;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.KeyguardManager;
@@ -8,6 +9,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 
@@ -114,6 +116,14 @@ public class PaymentDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_details);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Android M Permission check
+
+            if (this.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
 
         Setting.getInstance().mLastPaymentHis = null;
 
@@ -322,8 +332,6 @@ public class PaymentDetailsActivity extends BaseActivity {
             toast.show();
             return;
         }
-
-
 
         try{
             mBioManager = new BiometricManager.BiometricBuilder(this)
