@@ -37,6 +37,8 @@ public class Setting {
     public List<Pair<String, String>> mCoinTokenArray = new ArrayList<>();
     public boolean mTestModel = false;
 
+    public String mPaymentNFCInfo = "";
+
     private Setting() {
 
     }
