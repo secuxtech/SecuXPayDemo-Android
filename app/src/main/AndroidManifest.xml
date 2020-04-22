@@ -27,13 +27,15 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:configChanges="keyboardHidden|orientation"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
+        tools:ignore="LockedOrientationActivity"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".Activity.ChangePasswordActivity">
+        <activity android:name=".Activity.ChangePasswordActivity" android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.UserInfoActivity" />
@@ -42,6 +44,7 @@
 
         <activity
             android:name=".Activity.SplashActivity"
+            android:screenOrientation = "portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,52 +52,66 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.ReceiptActivity">
+        <activity android:name=".Activity.ReceiptActivity"  android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
-        <activity android:name=".Activity.UserInfoActivity" />
-        <activity android:name=".Activity.PaymentMainActivity" />
-        <activity android:name=".Activity.ScanQRCodeActivity">
+        <activity android:name=".Activity.UserInfoActivity"  android:screenOrientation = "portrait"/>
+        <activity android:name=".Activity.PaymentMainActivity"  android:screenOrientation = "portrait">
+            <!-- NFC Intents -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
+        </activity>
+        <activity android:name=".Activity.ScanQRCodeActivity"  android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
-        <activity android:name=".Activity.TokenTransferDetailsActivity">
+        <activity android:name=".Activity.TokenTransferDetailsActivity" android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentHistoryActivity" />
         </activity>
-        <activity android:name=".Activity.TokenTransHistoryActivity">
+        <activity android:name=".Activity.TokenTransHistoryActivity" android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity" />
         </activity>
-        <activity android:name=".Activity.CoinAccountListActivity" />
-        <activity android:name=".Activity.LoginActivity" android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Activity.PaymentHistoryActivity">
+        <activity android:name=".Activity.CoinAccountListActivity" android:screenOrientation = "portrait" />
+        <activity android:name=".Activity.LoginActivity" android:theme="@style/AppTheme.NoActionBar" android:screenOrientation = "portrait">
+
+        </activity>
+        <activity android:name=".Activity.PaymentHistoryActivity" android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
-        <activity android:name=".Activity.PaymentResultActivity">
+        <activity android:name=".Activity.PaymentResultActivity" android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
-        <activity android:name=".Activity.PaymentDetailsActivity">
+        <activity android:name=".Activity.PaymentDetailsActivity" android:screenOrientation = "portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.secuxtech.mysecuxpay.Activity.PaymentMainActivity" />
         </activity>
-        <activity android:name=".Activity.BaseActivity" />
+        <activity android:name=".Activity.BaseActivity" android:screenOrientation = "portrait" />
         <activity
             android:name=".Activity.MainActivity"
+            android:screenOrientation = "portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
+            android:screenOrientation = "portrait"
             tools:replace="screenOrientation" />
 
 
