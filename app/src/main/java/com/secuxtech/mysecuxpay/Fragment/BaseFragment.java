@@ -16,6 +16,7 @@ import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
 import com.secuxtech.mysecuxpay.Activity.CoinAccountListActivity;
+import com.secuxtech.mysecuxpay.Activity.PaymentMainActivity;
 import com.secuxtech.mysecuxpay.Model.Setting;
 import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 import com.secuxtech.paymentkit.SecuXAccountManager;
@@ -77,12 +78,21 @@ public class BaseFragment  extends Fragment {
 
                         Setting.getInstance().mUserLogout = false;
                         Setting.getInstance().mAccount = account;
-                        Setting.getInstance().mUserAccountName = account.mAccountName;
-                        Setting.getInstance().mUserAccountPwd = account.mPassword;
-                        Setting.getInstance().saveSettings(getActivity());
-                        Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
-                        startActivity(newIntent);
 
+                        if (Setting.getInstance().mUserAccountPwd != account.mPassword ||
+                            Setting.getInstance().mUserAccountName != account.mAccountName) {
+                            Setting.getInstance().mUserAccountName = account.mAccountName;
+                            Setting.getInstance().mUserAccountPwd = account.mPassword;
+                            Setting.getInstance().saveSettings(getActivity());
+                        }
+
+                        if (Setting.getInstance().mPaymentNFCInfo.length() > 0){
+                            Intent newIntent = new Intent(getActivity(), PaymentMainActivity.class);
+                            startActivity(newIntent);
+                        }else {
+                            Intent newIntent = new Intent(getActivity(), CoinAccountListActivity.class);
+                            startActivity(newIntent);
+                        }
                     }
                 });
 
