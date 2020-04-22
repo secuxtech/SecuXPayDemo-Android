@@ -105,7 +105,14 @@ public class LoginFragment extends BaseFragment {
         if (Setting.getInstance().mAccount == null) {
             Setting.getInstance().loadSettings(getActivity());
         }
+
+        TextView bioLoginTextView = view.findViewById(R.id.textView_login_bioid);
+        View underlineView = view.findViewById(R.id.view_login_underline);
+
         if (!Setting.getInstance().mUserLogout && Setting.getInstance().mUserAccountName!="" && Setting.getInstance().mUserAccountPwd!=""){
+
+            bioLoginTextView.setVisibility(View.VISIBLE);
+            underlineView.setVisibility(View.VISIBLE);
 
             if(BiometricUtils.isSdkVersionSupported() &&
                BiometricUtils.isPermissionGranted(getActivity()) &&
@@ -114,6 +121,10 @@ public class LoginFragment extends BaseFragment {
 
                 onUseTouchIDFaceIDLoginClick(null);
             }
+        }else{
+
+            bioLoginTextView.setVisibility(View.INVISIBLE);
+            underlineView.setVisibility(View.INVISIBLE);
         }
 
         return view;
