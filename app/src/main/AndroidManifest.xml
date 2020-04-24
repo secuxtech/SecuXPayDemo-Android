@@ -63,12 +63,12 @@
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
+
+                <data android:scheme="https"
+                    android:host="pmsweb.secuxtech.com"/>
             </intent-filter>
 
-            <meta-data
-                android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_filter" />
+
         </activity>
         <activity android:name=".Activity.ScanQRCodeActivity"  android:screenOrientation = "portrait">
             <meta-data
