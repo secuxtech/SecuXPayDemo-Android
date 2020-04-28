@@ -30,7 +30,7 @@ import com.secuxtech.mysecuxpay.Utility.CommonProgressDialog;
 
 public class BaseActivity extends AppCompatActivity {
 
-    public static final String TAG = "MySecuXPay";
+    public static final String TAG = "SecuXEvPay";
     protected boolean mShowBackButton = true;
     protected boolean mShowLogo = true;
     protected Context mContext = this;
